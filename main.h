@@ -3,9 +3,19 @@
 
 #include <SDL2/SDL.h>
 #include <stdbool.h>
-#include "graphics/graphics.h"
+#include <stdio.h>
+#include <stdlib.h>
+#include <time.h>
 
-#define INIT_DIM 10
+#include "graphics.h"
+#include "minesweeper.h"
+#include "configs.h"
+#include "gamestate.h"
+
+#define WIDTH 1366
+#define HEIGHT 768
+#define WIDTH_SPACE_MESH_MINES 768
+
 #define FIRST 1
 #define MIDDLE 2
 #define LAST 3
@@ -16,23 +26,24 @@
 #define TEX_BOMB 11
 #define TEX_BOMBBOOM 12
 
-#define AMMOUNT_TEXTURES 13
+#define AMMOUNT_TEXTURES 14
+#define AMM_TEXT_COL_ASSET 7
+#define AMMOUNT_ASSETS 7
 
-typedef struct {
-    bool bomb;
-    bool flag;
-    bool question_mark; // to be implemented
-    bool revealed;
-    bool loose; // TODO: CHANGE IT! DELETE IT!
-    int adjacency;
-} mineCeld; // maybe then add a cheat or sth
+#define CELD_EMPTY 0
+#define CELD_BOMB 1
 
-typedef struct {
-    mineCeld squareField8[8][8];
-    mineCeld squareField10[10][10];
-    mineCeld squareField15[15][15];
-    mineCeld squareField20[20][20];
-    mineCeld squareField32[32][32];
-} GameState;
+#define OK 0
+#define MEM_ERR 1 // TODO: Check when it has to be used!
+#define DIM_ERR 2
+#define FILE_ERR 3
+
+#define TMP_OFFSET 20
+
+typedef struct Menu { // For later
+    void (*init)(SDL_Renderer* renderer, GameState* game, GHP_TexturesData* tex);
+    void (*handler)(SDL_Renderer* renderer, GameState* game, GHP_TexturesData* tex, SDL_Event* event, int* mode);
+    void (*render)(SDL_Renderer* renderer, GameState* game, GHP_TexturesData* tex);
+} Menu;
 
 #endif // MAIN_H_INCLUDED
