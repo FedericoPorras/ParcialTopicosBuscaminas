@@ -1,5 +1,5 @@
 # depslib dependency file v1.0
-1749266262 source:d:\facu\topicos\tpparcial\main.c
+1749304055 source:d:\facu\topicos\tpparcial\main.c
 	"main.h"
 
 1748607470 d:\facu\topicos\tpparcial\graphics\graphics.c
@@ -396,7 +396,7 @@
 	"begin_code.h"
 	"close_code.h"
 
-1749266012 d:\facu\topicos\tpparcial\main.h
+1749301755 d:\facu\topicos\tpparcial\main.h
 	<SDL.h>
 	<stdbool.h>
 	<stdio.h>
@@ -414,13 +414,14 @@
 	<time.h>
 	"gamestate.h"
 
-1749244817 source:d:\facu\topicos\tpparcial\minesweeper.c
+1749303332 source:d:\facu\topicos\tpparcial\minesweeper.c
 	"minesweeper.h"
+	<windows.h>
 
-1749259810 source:d:\facu\topicos\tpparcial\graphics.c
+1749301550 source:d:\facu\topicos\tpparcial\graphics.c
 	"graphics.h"
 
-1749260021 d:\facu\topicos\tpparcial\graphics.h
+1749301760 d:\facu\topicos\tpparcial\graphics.h
 	<stdio.h>
 	<stdbool.h>
 	<SDL.h>

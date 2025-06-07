@@ -20,6 +20,7 @@ int main (int argc, char *argv[]) {
     if (GHP_SetWindow(&myWindow, nameWindow, react, WIDTH, HEIGHT, &game, &tex_data)) { // it returns true at the end of the game
         GHP_DestroyWindow(&myWindow);
         free(tex_data.buttons);
+        free(tex_data.buttonsTexs);
         free(tex_data.textures);
     }
 
@@ -157,17 +158,20 @@ int initTexData(GHP_TexturesData* tex_data, SDL_Renderer* renderer, GameState* g
 
     // load buttons
     tex_data->buttons = malloc(sizeof(GHP_Button)*AMMOUNT_BUTTONS);
-    if (initButtons(renderer, tex_data->buttons) != OK) return TEX_ERR;
+    tex_data->buttonsTexs = malloc(sizeof(GHP_Texture)*AMMOUNT_BUTTONS);
+    tex_data->buttons_loaded = 0;
+
+    if (initButtons(renderer, tex_data) != OK) return TEX_ERR;
 
     return OK;
 }
 
-int initButtons(SDL_Renderer* renderer, GHP_Button* buttons) { // PROBLEM HERE
-    buttons[BUT_START] = GHP_newButtonAbs(renderer, "img/buttons.png", 0, 0, 289, 153, (WIDTH-289)/2, 30, setModePlay);
-    buttons[BUT_PLAYAGAIN] = GHP_newButtonAbs(renderer, "img/buttons.png", 328, 34, 653, 308, 1000, (HEIGHT-(308-34))/2, setModePlay);
+int initButtons(SDL_Renderer* renderer, GHP_TexturesData* texData) { // PROBLEM HERE
+    GHP_newButtonAbs(renderer, "img/buttons.png", texData, &texData->buttons[BUT_START], 0, 0, 289, 153, (WIDTH-289)/2, 30, setModePlay);
+    GHP_newButtonAbs(renderer, "img/buttons.png", texData, &texData->buttons[BUT_PLAYAGAIN], 328, 34, 653, 308, 1000, (HEIGHT-(308-34))/2, setModePlay);
 
     for(int i=0; i<AMMOUNT_BUTTONS; i++) {
-        if (!(buttons+i)->tex) {
+        if (! (texData->buttons + i)->tex ) {
             printf("\nError loading the buttons.");
             return TEX_ERR; // could be file
         }
@@ -215,9 +219,9 @@ void logFileWriteClick(char button, int* posInMesh, FILE* file) {
     char date[20];
     time_t t = time(NULL);
     struct tm* now = localtime(&t);
-    sprintf(date, "%d-%d-%d-%d-%d-%d", now->tm_year+1900, now->tm_mon, now->tm_mday, now->tm_hour, now->tm_min, now->tm_sec);
+    sprintf(date, "%04d-%02d-%02d-%02d-%02d-%02d", now->tm_year+1900, now->tm_mon+1, now->tm_mday, now->tm_hour, now->tm_min, now->tm_sec); // TODO: Release warning
 
-    fprintf(file, "\nEvent:Click/Type:%c/PosMesh:(%02d,%02d)", button, *posInMesh, *(posInMesh+1));
+    fprintf(file, "\nEvent:Click/Type:%c/PosMesh:(%02d,%02d)/Date:(%s)", button, *posInMesh, *(posInMesh+1), date);
 }
 
 void renderMeshUpdated(SDL_Renderer* renderer, GameState* game, GHP_TexturesData* tex, GHP_Mesh mesh) {
@@ -259,8 +263,6 @@ void handleButtonsClick(GHP_Button* buttons, int ammount, int x, int y, GameStat
         }
     }
 }
-
-
 
 
 
@@ -344,21 +346,21 @@ void renderPlay(SDL_Renderer* renderer, GameState* game, GHP_TexturesData* tex, 
 
 void initMenu(SDL_Renderer* renderer, GameState* game, GHP_TexturesData* tex, int* mode) {
     GHP_setBGColor(renderer, 255, 0, 0, 255);
-    //GHP_renderButton(renderer, &tex->buttons[BUT_START]);
-    GHP_Texture texButStart = GHP_newTexture(renderer, "img/buttons.png", 0, 0, 289, 153);
-    GHP_renderTexture(renderer, &texButStart, 50, 50);
+    GHP_renderButton(renderer, &tex->buttons[BUT_START]);
+    //GHP_Texture texButStart = GHP_newTexture(renderer, "img/buttons.png", 0, 0, 289, 153);
+    //GHP_renderTexture(renderer, &texButStart, 50, 50);
 }
 
 void handlerMenu(SDL_Renderer* renderer, GameState* game, GHP_TexturesData* tex, SDL_Event* event, int* mode) {
-    //GHP_Button buttons[] = {tex->buttons[BUT_START]};
-    //handleButtonsClick(buttons, AMMOUNT_BUTTONS, event->button.x, event->button.y, game, mode);
+    GHP_Button buttons[] = {tex->buttons[BUT_START]};
+    handleButtonsClick(buttons, AMMOUNT_BUTTONS, event->button.x, event->button.y, game, mode);
 
-
+    /*
     int pos[2][2] = {{50, 50}, {50+289, 50+153}};
     if (event->type == SDL_MOUSEBUTTONDOWN && event->button.button == SDL_BUTTON_LEFT
         && GHP_clickIn(event->button.x, event->button.y, pos))
         *mode = MODE_PLAY;
-
+    */
 }
 
 // Lost

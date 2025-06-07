@@ -147,13 +147,18 @@ int GHP_loadRectAsset(SDL_Renderer* renderer, const char* path, GHP_Texture** te
     return OK;
 }
 
-GHP_Button GHP_newButtonAbs(SDL_Renderer* renderer, char* path, int initX, int initY, int endX, int endY, int windowX, int windowY, ButtonReaction func) { // TODO: Consider taking it to graphics
-    GHP_Texture newTex = GHP_newTextureAbs(renderer, path, initX, initY, endX, endY);
-    if (!newTex.tex) {
+void GHP_newButtonAbs(SDL_Renderer* renderer, char* path, GHP_TexturesData* texData, GHP_Button* button, int initX, int initY, int endX, int endY, int windowX, int windowY, ButtonReaction func) { // TODO: Consider taking it to graphics
+    texData->buttonsTexs[texData->buttons_loaded] = GHP_newTextureAbs(renderer, path, initX, initY, endX, endY);
+    button->tex = &(texData->buttonsTexs[texData->buttons_loaded]);
+    texData->buttons_loaded++;
+
+    if (!button->tex) {
         printf("\nError loading a button texture.");
-        return (GHP_Button){NULL, -1, -1, NULL};
+        button->tex = NULL;
     }
-    return (GHP_Button){&newTex, windowX, windowY, func};
+    button->windowX = windowX;
+    button->windowY = windowY;
+    button->on_click = func;
 }
 
 void GHP_renderButton(SDL_Renderer* renderer, GHP_Button* button) {

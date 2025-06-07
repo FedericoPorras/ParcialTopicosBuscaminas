@@ -71,7 +71,7 @@ void draw_menu(SDL_Renderer* renderer, GameState* game, GHP_TexturesData* TexDat
 void logFileWriteClick(char button, int* posInMesh, FILE* file);
 void renderMeshUpdated(SDL_Renderer* renderer, GameState* game, GHP_TexturesData* tex, GHP_Mesh mesh);
 void handleButtonsClick(GHP_Button* buttons, int ammount, int x, int y, GameState* game, int* mode);
-int initButtons(SDL_Renderer* renderer, GHP_Button* buttons);
+int initButtons(SDL_Renderer* renderer, GHP_TexturesData* buttons);
 
 // for menus
 void initPlay(SDL_Renderer* renderer, GameState* game, GHP_TexturesData* tex, int* mode);

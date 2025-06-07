@@ -45,9 +45,10 @@ typedef struct {
 typedef struct {
     GHP_Texture* textures;
     GHP_Button* buttons;
+    GHP_Texture* buttonsTexs;
+    int buttons_loaded;
     GHP_Mesh active_mesh;
 } GHP_TexturesData;
-
 
 
 //typedef void (*Drawing) (SDL_Renderer* renderer, void* gameData, GHP_TexturesData* TexData, int* mode);
@@ -69,7 +70,7 @@ void GHP_coordsToPos(GHP_Mesh* mesh, int x, int y, int* pos);
 void GHP_posToCoords(GHP_Mesh* mesh, int x, int y, int* pos);
 bool GHP_clickInMesh(int x, int y, GHP_Mesh* mesh);
 int GHP_loadRectAsset(SDL_Renderer* renderer, const char* path, GHP_Texture** texturesAsset, int ammount_textures, int width_item, int height_item, int colsAsset);
-GHP_Button GHP_newButtonAbs(SDL_Renderer* renderer, char* path, int initX, int initY, int endX, int endY, int windowX, int windowY, ButtonReaction func);
+void GHP_newButtonAbs(SDL_Renderer* renderer, char* path, GHP_TexturesData* texData, GHP_Button* button, int initX, int initY, int endX, int endY, int windowX, int windowY, ButtonReaction func);
 void GHP_renderButton(SDL_Renderer* renderer, GHP_Button* button);
 
 #endif // GRAPHICS_H_INCLUDED

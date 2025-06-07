@@ -1,5 +1,7 @@
 #include "minesweeper.h"
 
+#include <windows.h>
+
 void emptyField(int rows, int cols, mineCeld** field) {
     for (int i=0; i<rows; i++) {
         for (int j=0; j<cols; j++) {
@@ -11,27 +13,21 @@ void emptyField(int rows, int cols, mineCeld** field) {
 int randomBombs(int rows, int cols, mineCeld** field, int ammount, int seed, int pos[2]) {
     // Load a seed
     int thisSeed;
-    bool correctGen=false;
 
-    while (!correctGen) { // TODO: Check how much time costs this loop because sometimes here the execution stops
-        if (seed == -1) {
-            thisSeed = time(NULL);
-            srand(thisSeed);
-        }
-        else srand(seed); // or random it
+    if (seed == -1) {
+        thisSeed = time(NULL);
+        srand(thisSeed);
+    }
+    else srand(seed); // or random it
 
-        // Put the bombs
-        int i=0;
-        while(i<ammount) {
-            mineCeld* random = &(field[rand()%rows][rand()%cols]);
-            if (!random->bomb) {
-                random->bomb = true;
-                i++;
-            }
-        }
+    // Put the bombs
+    int i=0;
+    while(i<ammount) {
 
-        if (!field[*pos][*(pos+1)].bomb) {
-            correctGen = true;
+        mineCeld* random = &(field[rand()%rows][rand()%cols]);
+        if (!random->bomb && random != &field[*pos][*(pos+1)]) {
+            random->bomb = true;
+            i++;
         }
     }
 
