@@ -1,7 +1,7 @@
 #include "gamestate.h"
 
 void nullGame(GameState* game) {
-    *game = (GameState){false, 0, -1, -1, -1, -1, NULL}; // TODO: IDK it raises a warning
+    *game = (GameState){false, 0, -1, -1, -1, -1, NULL};
 }
 
 void printGame(GameState* game) {

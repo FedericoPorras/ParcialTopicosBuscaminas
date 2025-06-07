@@ -11,13 +11,12 @@
 #define MIN_PER 0.01
 #define MAX_PER 100
 #define MIN_COLS 8
-#define MAX_COLS 45
+#define MAX_COLS 40
 #define MIN_ROWS 8
-#define MAX_ROWS 45 // TODO: Check this limits!
+#define MAX_ROWS 40
 
 bool initConfig(GameState* game);
 bool validConfig(GameState* game);
-void resetConfig();
-
+bool resetConfig();
 
 #endif // CONFIGS_H_INCLUDED

@@ -18,13 +18,13 @@ bool initConfig(GameState* game) {
         else if (strcmp(option, "semilla") == 0)
             game->seed=(int)value;
         else if (strcmp(option, "minas") == 0) {
-            if (lastChar == '%') game->bombsPer = value; // TODO: Check this kind of casts as parses
+            if (lastChar == '%') game->bombsPer = value;
             else game->bombsNum = (int)value;
         }
     }
     fclose(Fconfig);
 
-    // "Minas found once"  This has to be here because in the loop you may don't know cols and rows
+    // This has to be here because in the loop you may don't know cols and rows
     if (game->bombsNum > 0) game->bombsPer = (float)(game->columns * game->rows) / game->bombsNum;
     else game->bombsNum = (int)((game->columns * game->rows) * (game->bombsPer / 100));
 
@@ -48,13 +48,16 @@ bool validConfig(GameState* game) {
     else return true;
 }
 
-void resetConfig() { // TODO: Handle possible errors with files
-    //remove("buscaminas.conf");
-    FILE* defaultConfig = fopen("buscaminas.conf", "wt"); // do we need a remove before?
+bool resetConfig() {
+    FILE* defaultConfig = fopen("buscaminas.conf", "wt");
+    if (!defaultConfig) {
+        printf("\nError opening default config file.");
+        return false;
+    }
+
     char def[] = "columnas=10\nfilas=10\nminas=15%\nsemilla=-1";
     fwrite(def, sizeof(def), 1, defaultConfig); // sizeof(def) or strlen ?
     fclose(defaultConfig);
+    return true;
 }
-
-
 

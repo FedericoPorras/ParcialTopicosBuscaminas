@@ -3,18 +3,11 @@
 
 #define SDL_MAIN_HANDLED // avoid SDLmain
 
-#define MODE_INIT_LOST 6
-#define MODE_LOST 5
-#define MODE_INIT_MENU 4
-#define MODE_MENU 3
-#define MODE_INIT_PLAY 2
-#define MODE_PLAY 1
-#define MODE_END -1
-
 #include <stdio.h>
 #include <stdbool.h>
-#include <SDL2/SDL.h>
-#include <SDL2/SDL_image.h>
+#include <SDL.h>
+#include <SDL_image.h>
+#include "gamestate.h"
 
 #define OK 0
 #define MEM_ERR 1
@@ -43,14 +36,25 @@ typedef struct {
 } GHP_Mesh;
 
 typedef struct {
+    GHP_Texture* tex;
+    int windowX;
+    int windowY;
+    void (*on_click)(void* gameData, int* mode);
+} GHP_Button;
+
+typedef struct {
     GHP_Texture* textures;
+    GHP_Button* buttons;
     GHP_Mesh active_mesh;
 } GHP_TexturesData;
 
-typedef void (*Drawing) (SDL_Renderer* renderer, void* gameData, GHP_TexturesData* TexData, int* mode);
-typedef void (*Reaction)(SDL_Renderer* renderer, void* gameData, GHP_TexturesData* TexData, Drawing draw);
 
-bool GHP_SetWindow(struct GHP_WindowData* windowData, char* name, Reaction react, Drawing draw, int width, int height, void* game, GHP_TexturesData* textures);
+
+//typedef void (*Drawing) (SDL_Renderer* renderer, void* gameData, GHP_TexturesData* TexData, int* mode);
+typedef void (*Reaction)(SDL_Renderer* renderer, void* gameData, GHP_TexturesData* TexData);
+typedef void (*ButtonReaction)(void* gameData, int* mode);
+
+bool GHP_SetWindow(struct GHP_WindowData* windowData, char* name, Reaction react, int width, int height, void* game, GHP_TexturesData* textures);
 void GHP_DestroyWindow(struct GHP_WindowData* windowData);
 GHP_Texture GHP_newTexture(SDL_Renderer* renderer, const char* path, int offsetX, int offsetY, int width, int height);
 GHP_Texture GHP_newTextureAbs(SDL_Renderer* renderer, const char* path, int initX, int initY, int endX, int endY);
@@ -65,7 +69,8 @@ void GHP_coordsToPos(GHP_Mesh* mesh, int x, int y, int* pos);
 void GHP_posToCoords(GHP_Mesh* mesh, int x, int y, int* pos);
 bool GHP_clickInMesh(int x, int y, GHP_Mesh* mesh);
 int GHP_loadRectAsset(SDL_Renderer* renderer, const char* path, GHP_Texture** texturesAsset, int ammount_textures, int width_item, int height_item, int colsAsset);
-
+GHP_Button GHP_newButtonAbs(SDL_Renderer* renderer, char* path, int initX, int initY, int endX, int endY, int windowX, int windowY, ButtonReaction func);
+void GHP_renderButton(SDL_Renderer* renderer, GHP_Button* button);
 
 #endif // GRAPHICS_H_INCLUDED
 

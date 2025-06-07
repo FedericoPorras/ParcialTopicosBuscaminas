@@ -1,6 +1,8 @@
+// aclarar espiritu
+
 #include "graphics.h"
 
-bool GHP_SetWindow(struct GHP_WindowData* windowData, char* name, Reaction react, Drawing draw, int width, int height, void* gameData, GHP_TexturesData* textures) {
+bool GHP_SetWindow(struct GHP_WindowData* windowData, char* name, Reaction react, int width, int height, void* gameData, GHP_TexturesData* textures) {
     // Initialize SDL and calls the react function. It will has as arguments the renderer, GameState, GHP_TexturesData*, and a draw function
 
     // init SDL
@@ -26,7 +28,7 @@ bool GHP_SetWindow(struct GHP_WindowData* windowData, char* name, Reaction react
 
     SDL_SetRenderDrawBlendMode(windowData->renderer, SDL_BLENDMODE_BLEND); // transparence
 
-    react(windowData->renderer, gameData, textures, draw); // all functionality given from the user
+    react(windowData->renderer, gameData, textures); // all functionality given from the user
     SDL_Delay(100); // to wait a little bit before closing and avoid consuming too resources
 
     SDL_DestroyRenderer(windowData->renderer);
@@ -80,11 +82,9 @@ void GHP_renderMesh(SDL_Renderer* renderer, GHP_Mesh* mesh, bool dynamicPresent)
     }
 }
 
-void GHP_setBGColor(SDL_Renderer* renderer, int r, int g, int b, int a) { // TODO: Check if the present is actually neccesary
-    // BE CAREFUL! It presents the render, so it has to be called before any render change
+void GHP_setBGColor(SDL_Renderer* renderer, int r, int g, int b, int a) {
     SDL_SetRenderDrawColor(renderer, r,g,b,a);
     SDL_RenderClear(renderer);
-    SDL_RenderPresent(renderer);
 }
 
 bool GHP_clickIn(int x, int y, int pos[2][2]) {
@@ -146,4 +146,20 @@ int GHP_loadRectAsset(SDL_Renderer* renderer, const char* path, GHP_Texture** te
     }
     return OK;
 }
+
+GHP_Button GHP_newButtonAbs(SDL_Renderer* renderer, char* path, int initX, int initY, int endX, int endY, int windowX, int windowY, ButtonReaction func) { // TODO: Consider taking it to graphics
+    GHP_Texture newTex = GHP_newTextureAbs(renderer, path, initX, initY, endX, endY);
+    if (!newTex.tex) {
+        printf("\nError loading a button texture.");
+        return (GHP_Button){NULL, -1, -1, NULL};
+    }
+    return (GHP_Button){&newTex, windowX, windowY, func};
+}
+
+void GHP_renderButton(SDL_Renderer* renderer, GHP_Button* button) {
+    GHP_renderTexture(renderer, button->tex, button->windowX, button->windowY);
+}
+
+
+
 

@@ -3,6 +3,7 @@
 
 #include <stdbool.h>
 #include <stdio.h>
+#include <time.h>
 
 typedef struct {
     bool bomb;
@@ -21,8 +22,8 @@ typedef struct {
     int bombsNum;
     float bombsPer; // percentage
     mineCeld** field;
+    FILE* logFile;
 } GameState;
-
 
 void nullGame(GameState* game); // TODO: Use it, replace other aparitions
 void printGame(GameState* game);

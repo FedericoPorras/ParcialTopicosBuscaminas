@@ -40,7 +40,7 @@ int randomBombs(int rows, int cols, mineCeld** field, int ammount, int seed, int
 
 }
 
-char check_position(int i, int j, int rows, int cols) { // TODO: USE HEXA INSTEAD OF BINARY!
+char check_position(int i, int j, int rows, int cols) {
     // bits
     // 012
     // 3X4
@@ -57,21 +57,10 @@ char check_position(int i, int j, int rows, int cols) { // TODO: USE HEXA INSTEA
             rv |= masks[k];
     }
 
-    /*
-    if (i > 0 && j > 0)           rv |= 0b00000001;
-    if (i > 0)                    rv |= 0b00000010;
-    if (i > 0 && j<cols-1)        rv |= 0b00000100;
-    if (j > 0)                    rv |= 0b00001000;
-    if (j < cols-1)               rv |= 0b00010000;
-    if (i < rows-1 && j > 0)      rv |= 0b00100000;
-    if (i < rows-1)               rv |= 0b01000000;
-    if (i < rows-1 && j < cols-1) rv |= 0b10000000;
-    */
-
     return rv;
 }
 
-void calcAdjacency(int rows, int cols, mineCeld** field) {// TODO: USE HEXA INSTEAD OF BINARY!
+void calcAdjacency(int rows, int cols, mineCeld** field) {// TODO: USE HEXA INSTEAD OF BINARY! USE MASKS[]!
     for (int i=0; i<rows; i++) {
         for (int j=0; j<cols; j++) {
             if (field[i][j].bomb) field[i][j].adjacency = -1;
@@ -109,7 +98,7 @@ bool checkNoAdjacencies(int i, int j, int rows, int cols, mineCeld** field) {// 
             else return false;
 }
 
-void revealAdjacencies(int i, int j , int rows, int cols, mineCeld** field) { // TODO: Put better this kind of things
+void revealAdjacencies(int i, int j , int rows, int cols, mineCeld** field) { // TODO: Put better this kind of things. USE MASKS[] and the other array!
     if (checkNoAdjacencies(i,j,rows,cols,field)) field[i][j].revealed = true;
     else {
         if (!field[i][j].bomb && !field[i][j].flag) field[i][j].revealed = true;
@@ -139,6 +128,7 @@ void coverAll(int rows, int cols, mineCeld** field) {
     for (int i=0; i<rows; i++) {
         for (int j=0; j<cols; j++) {
             field[i][j].revealed = false;
+            field[i][j].flag = false;
         }
     }
 }

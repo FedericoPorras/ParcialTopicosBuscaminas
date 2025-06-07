@@ -13,9 +13,8 @@
 				<Option compiler="gcc" />
 				<Compiler>
 					<Add option="-g" />
-					<Add directory="lib/SDL2-2.0.22/x86_64-w64-mingw32/include" />
 					<Add directory="lib/SDL2-2.0.22/x86_64-w64-mingw32/include/SDL2" />
-					<Add directory="lib/SDL2_image-2.8.8/x86_64-w64-mingw32/include" />
+					<Add directory="lib" />
 				</Compiler>
 				<Linker>
 					<Add option="-lmingw32 -lSDL2main -lSDL2 -lSDL2_image" />
