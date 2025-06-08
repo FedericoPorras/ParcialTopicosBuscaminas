@@ -3,7 +3,7 @@
 #include "graphics.h"
 
 bool GHP_SetWindow(struct GHP_WindowData* windowData, char* name, Reaction react, int width, int height, void* gameData, GHP_TexturesData* textures) {
-    // Initialize SDL and calls the react function. It will has as arguments the renderer, GameState, GHP_TexturesData*, and a draw function
+    // Initialize SDL and calls the react function. It will has as arguments the renderer, void* gameData for any info of the game, GHP_TexturesData*, and a draw function
 
     // init SDL
     if (SDL_Init(SDL_INIT_VIDEO)) {

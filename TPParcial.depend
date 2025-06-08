@@ -1,5 +1,5 @@
 # depslib dependency file v1.0
-1749304055 source:d:\facu\topicos\tpparcial\main.c
+1749411630 source:d:\facu\topicos\tpparcial\main.c
 	"main.h"
 
 1748607470 d:\facu\topicos\tpparcial\graphics\graphics.c
@@ -396,37 +396,35 @@
 	"begin_code.h"
 	"close_code.h"
 
-1749301755 d:\facu\topicos\tpparcial\main.h
+1749411330 d:\facu\topicos\tpparcial\main.h
 	<SDL.h>
 	<stdbool.h>
 	<stdio.h>
 	<stdlib.h>
 	<time.h>
 	"graphics.h"
-	"minesweeper.h"
-	"configs.h"
 	"gamestate.h"
+	"configs.h"
+	"minesweeper.h"
 
-1749163721 d:\facu\topicos\tpparcial\minesweeper.h
+1749407638 d:\facu\topicos\tpparcial\minesweeper.h
 	<stdbool.h>
 	<stdio.h>
 	<stdlib.h>
 	<time.h>
 	"gamestate.h"
 
-1749303332 source:d:\facu\topicos\tpparcial\minesweeper.c
+1749411257 source:d:\facu\topicos\tpparcial\minesweeper.c
 	"minesweeper.h"
-	<windows.h>
 
-1749301550 source:d:\facu\topicos\tpparcial\graphics.c
+1749407799 source:d:\facu\topicos\tpparcial\graphics.c
 	"graphics.h"
 
-1749301760 d:\facu\topicos\tpparcial\graphics.h
+1749407821 d:\facu\topicos\tpparcial\graphics.h
 	<stdio.h>
 	<stdbool.h>
 	<SDL.h>
 	<SDL_image.h>
-	"gamestate.h"
 
 1650910406 d:\facu\topicos\tpparcial\sdl2-2.0.22\x86_64-w64-mingw32\include\sdl2\sdl.h
 	"SDL_main.h"
@@ -812,20 +810,20 @@
 	"begin_code.h"
 	"close_code.h"
 
-1749251396 source:d:\facu\topicos\tpparcial\configs.c
+1749408176 source:d:\facu\topicos\tpparcial\configs.c
 	"configs.h"
 
-1749243627 d:\facu\topicos\tpparcial\configs.h
+1749409263 d:\facu\topicos\tpparcial\configs.h
 	<stdbool.h>
+	<string.h>
 	"gamestate.h"
-	"main.h"
 
-1749243649 d:\facu\topicos\tpparcial\gamestate.h
+1749407542 d:\facu\topicos\tpparcial\gamestate.h
 	<stdbool.h>
 	<stdio.h>
 	<time.h>
 
-1749243636 source:d:\facu\topicos\tpparcial\gamestate.c
+1749409411 source:d:\facu\topicos\tpparcial\gamestate.c
 	"gamestate.h"
 
 1650910406 d:\facu\topicos\tpparcial\lib\sdl2-2.0.22\x86_64-w64-mingw32\include\sdl2\sdl.h

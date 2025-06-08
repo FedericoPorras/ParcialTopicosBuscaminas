@@ -7,17 +7,13 @@
 
 int main (int argc, char *argv[]) {
 
-    GameState game;
-    if (!initGame(&game)) {
-        printf("\nError in game initalizing");
-        return 1;
-    }
+    ConfigData configs;
 
     GHP_TexturesData tex_data;
 
     char* nameWindow = "Buscaminas";
     struct GHP_WindowData myWindow;
-    if (GHP_SetWindow(&myWindow, nameWindow, react, WIDTH, HEIGHT, &game, &tex_data)) { // it returns true at the end of the game
+    if (GHP_SetWindow(&myWindow, nameWindow, react, WIDTH, HEIGHT, &configs, &tex_data)) { // it returns true at the end of the game
         GHP_DestroyWindow(&myWindow);
         free(tex_data.buttons);
         free(tex_data.buttonsTexs);
@@ -33,13 +29,27 @@ int main (int argc, char *argv[]) {
 
 void react(SDL_Renderer* renderer, void* gameData, GHP_TexturesData* TexData) {
 
-    GHP_setBGColor(renderer, 0, 255, 0, 255);
+    int mode = MODE_MENU, modePrev; // init mode
 
-    GameState* game = (GameState*) gameData;
+    GHP_setBGColor(renderer, 0, 255, 0, 255); // for debugging
 
-    int mode = MODE_MENU;
-    int modePrev;
-    if (initTexData(TexData, renderer, game) != OK)
+    ConfigData* configs = (ConfigData*) gameData;
+    if (!initConfig(configs)) {
+        if (!resetConfig()) {
+            mode=MODE_END;
+        }
+        initConfig(configs);
+    }
+
+    GameState game;
+    nullGame(&game);
+    applyConfig(configs, &game);
+    if (!initGame(&game, configs)) {
+        printf("\nError in game initalizing");
+        mode=MODE_END;
+    }
+
+    if (initTexData(TexData, renderer, &game) != OK)
         mode = MODE_END;
 
     Section SectionPool[] = {
@@ -48,8 +58,11 @@ void react(SDL_Renderer* renderer, void* gameData, GHP_TexturesData* TexData) {
         {initLost, handlerLost, NULL}
     };
 
-    SectionPool[MODE_MENU].init(renderer, game, TexData, &mode);
-    SDL_RenderPresent(renderer);
+
+    if (mode != MODE_END) {
+        SectionPool[mode].init(renderer, &game, TexData, configs, &mode);
+        SDL_RenderPresent(renderer);
+    }
 
     SDL_Event event;
     while (mode != MODE_END) {
@@ -58,28 +71,29 @@ void react(SDL_Renderer* renderer, void* gameData, GHP_TexturesData* TexData) {
 
             if (event.type == SDL_QUIT) {
                 mode = MODE_END;
-                if (game->started) {
+                if (game.started) {
                     char msgCloseGame[] = "\nGame premature end";
-                    fwrite(msgCloseGame, sizeof(char), strlen(msgCloseGame), game->logFile);
-                    fclose(game->logFile);
+                    fwrite(msgCloseGame, sizeof(char), strlen(msgCloseGame), game.logFile);
+                    fclose(game.logFile);
+                    free(game.field);
                 }
             }
 
             else {
 
                 modePrev = mode;
-                SectionPool[mode].handler(renderer, game, TexData, &event, &mode);
+                SectionPool[mode].handler(renderer, &game, TexData, &event, &mode);
 
                 if (modePrev != mode) { // init function only when the mode changes
 
                     SDL_Event discard;
                     while (SDL_PollEvent(&discard)) {} // clear the queue of events
 
-                    SectionPool[mode].init(renderer, game, TexData, &mode);
+                    SectionPool[mode].init(renderer, &game, TexData, configs, &mode);
                 }
 
                 if (SectionPool[mode].render) { // because some modes have no render
-                    SectionPool[mode].render(renderer, game, TexData, &mode);
+                    SectionPool[mode].render(renderer, &game, TexData, &mode);
                 }
 
                 SDL_RenderPresent(renderer);
@@ -91,14 +105,12 @@ void react(SDL_Renderer* renderer, void* gameData, GHP_TexturesData* TexData) {
 
 }
 
-bool initGame(GameState* game) {
-    if (!initConfig(game)) {
-        if (!resetConfig()) {
-            return false;
-        }
-        initConfig(game);
-    }
-    printGame(game);
+
+
+
+
+
+bool initGame(GameState* game, ConfigData* configs) {
 
     game->field = (mineCeld**)newDinMtx(game->rows, game->columns, sizeof(mineCeld));
     if (!game->field) {
@@ -168,7 +180,7 @@ int initTexData(GHP_TexturesData* tex_data, SDL_Renderer* renderer, GameState* g
 
 int initButtons(SDL_Renderer* renderer, GHP_TexturesData* texData) { // PROBLEM HERE
     GHP_newButtonAbs(renderer, "img/buttons.png", texData, &texData->buttons[BUT_START], 0, 0, 289, 153, (WIDTH-289)/2, 30, setModePlay);
-    GHP_newButtonAbs(renderer, "img/buttons.png", texData, &texData->buttons[BUT_PLAYAGAIN], 328, 34, 653, 308, 1000, (HEIGHT-(308-34))/2, setModePlay);
+    GHP_newButtonAbs(renderer, "img/buttons.png", texData, &texData->buttons[BUT_PLAYAGAIN], 328, 34, 653, 308, 1000, (HEIGHT-(308-34))/2, setModeMenu);
 
     for(int i=0; i<AMMOUNT_BUTTONS; i++) {
         if (! (texData->buttons + i)->tex ) {
@@ -204,8 +216,8 @@ int userRevealCeld(int i, int j, GameState* game) {
         revealAdjacencies(i, j, game->rows, game->columns, game->field);
         return CELD_EMPTY;
     } else if (!game->field[i][j].flag) {
-        game->field[i][j].loose = true;
         revealAll(game->rows, game->columns, game->field);
+        game->lost[0] = i; game->lost[1] = j;
         return CELD_BOMB;
     } else return CELD_FLAGGED;
 }
@@ -240,10 +252,10 @@ void renderMeshUpdated(SDL_Renderer* renderer, GameState* game, GHP_TexturesData
             {
                 GHP_Texture adj_tex = tex->textures[game->field[i][j].adjacency];
                 GHP_renderTexture(renderer, &adj_tex, j*adj_tex.width+mesh.offsetX, i*adj_tex.height+mesh.offsetY);
-            } else if (!game->field[i][j].loose) { // bomb that made the player end the game
+            } else if (i != game->lost[0] || j != game->lost[1]) {
                 GHP_Texture adj_tex = tex->textures[TEX_BOMB]; // TODO: Change name
                 GHP_renderTexture(renderer, &adj_tex, j*adj_tex.width+mesh.offsetX, i*adj_tex.height+mesh.offsetY);
-            } else { // bomb loose
+            } else { // bomb that made the player end the game
                 GHP_Texture adj_tex = tex->textures[TEX_BOMBBOOM]; // TODO: Change name
                 GHP_renderTexture(renderer, &adj_tex, j*adj_tex.width+mesh.offsetX, i*adj_tex.height+mesh.offsetY);
             }
@@ -251,14 +263,14 @@ void renderMeshUpdated(SDL_Renderer* renderer, GameState* game, GHP_TexturesData
     }
 }
 
-void handleButtonsClick(GHP_Button* buttons, int ammount, int x, int y, GameState* game, int* mode) {
+void handleButtonsClick(GHP_Button* buttons, int ammount, int x, int y, GameState* game, int* mode, SDL_Event* event) {
     for (int i=0; i<ammount; i++) {
         int pos[2][2] = {
             { (buttons+i)->windowX, (buttons+i)->windowY },
             { (buttons+i)->windowX + (buttons+i)->tex->width,
               (buttons+i)->windowY + (buttons+i)->tex->height }
         };
-        if (GHP_clickIn(x, y, pos)) {
+        if (event->type == SDL_MOUSEBUTTONDOWN && event->button.button == SDL_BUTTON_LEFT && GHP_clickIn(x, y, pos)) {
             (buttons+i)->on_click(game, mode);
         }
     }
@@ -266,10 +278,13 @@ void handleButtonsClick(GHP_Button* buttons, int ammount, int x, int y, GameStat
 
 
 
+
 // Play
 
-void initPlay(SDL_Renderer* renderer, GameState* game, GHP_TexturesData* tex, int* mode) {
+void initPlay(SDL_Renderer* renderer, GameState* game, GHP_TexturesData* tex, ConfigData* configData, int* mode) {
+
     // start the game
+    applyConfig(configData, game);
     game->started = false;
     coverAll(game->rows, game->columns, game->field);
 
@@ -309,6 +324,7 @@ void handlerPlay(SDL_Renderer* renderer, GameState* game, GHP_TexturesData* tex,
                 if (event->button.button == SDL_BUTTON_LEFT) {
                     logFileWriteClick('L', pos, game->logFile);
                     if (userRevealCeld(i, j, game) == CELD_BOMB) {
+                        game->started = false;
                         char logLose[] = "\nEND_GAME:game_lost";
                         fwrite(logLose, sizeof(char), strlen(logLose), game->logFile);
                         fclose(game->logFile);
@@ -320,7 +336,7 @@ void handlerPlay(SDL_Renderer* renderer, GameState* game, GHP_TexturesData* tex,
                     logFileWriteClick('R', pos, game->logFile);
                 }
 
-                if (checkWin(game->rows, game->columns, game->field)) // TODO: Show it in window
+                if (game->started && checkWin(game->rows, game->columns, game->field)) // TODO: Show it in window
                     printf("\n\n\nWIN!");
             } else {
                 // to avoid first click bomb
@@ -344,7 +360,7 @@ void renderPlay(SDL_Renderer* renderer, GameState* game, GHP_TexturesData* tex, 
 
 // Menu
 
-void initMenu(SDL_Renderer* renderer, GameState* game, GHP_TexturesData* tex, int* mode) {
+void initMenu(SDL_Renderer* renderer, GameState* game, GHP_TexturesData* tex, ConfigData* configData, int* mode) {
     GHP_setBGColor(renderer, 255, 0, 0, 255);
     GHP_renderButton(renderer, &tex->buttons[BUT_START]);
     //GHP_Texture texButStart = GHP_newTexture(renderer, "img/buttons.png", 0, 0, 289, 153);
@@ -353,8 +369,7 @@ void initMenu(SDL_Renderer* renderer, GameState* game, GHP_TexturesData* tex, in
 
 void handlerMenu(SDL_Renderer* renderer, GameState* game, GHP_TexturesData* tex, SDL_Event* event, int* mode) {
     GHP_Button buttons[] = {tex->buttons[BUT_START]};
-    handleButtonsClick(buttons, AMMOUNT_BUTTONS, event->button.x, event->button.y, game, mode);
-
+    handleButtonsClick(buttons, AMMOUNT_BUTTONS, event->button.x, event->button.y, game, mode, event);
     /*
     int pos[2][2] = {{50, 50}, {50+289, 50+153}};
     if (event->type == SDL_MOUSEBUTTONDOWN && event->button.button == SDL_BUTTON_LEFT
@@ -365,18 +380,24 @@ void handlerMenu(SDL_Renderer* renderer, GameState* game, GHP_TexturesData* tex,
 
 // Lost
 
-void initLost(SDL_Renderer* renderer, GameState* game, GHP_TexturesData* tex, int* mode) {
+void initLost(SDL_Renderer* renderer, GameState* game, GHP_TexturesData* tex, ConfigData* configData, int* mode) {
     GHP_Texture texButPlayAgain = GHP_newTextureAbs(renderer, "img/buttons.png", 328, 34, 653, 308);
     GHP_renderTexture(renderer, &texButPlayAgain, 1000, 300);
+    revealAll(game->rows, game->columns, game->field);
+    renderMeshUpdated(renderer, game, tex, tex->active_mesh);
     SDL_RenderPresent(renderer);
 }
 
 void handlerLost(SDL_Renderer* renderer, GameState* game, GHP_TexturesData* tex, SDL_Event* event, int* mode) {
+    GHP_Button buttons[] = {tex->buttons[BUT_PLAYAGAIN]};
+    handleButtonsClick(buttons, AMMOUNT_BUTTONS, event->button.x, event->button.y, game, mode, event);
+    /*
     int pos[2][2] = { {1000, 300}, {1000 + 653 - 328, 300 + 308 - 34} };
     if (event->button.button == SDL_BUTTON_LEFT) {
         if (GHP_clickIn(event->button.x, event->button.y, pos))
             *mode = MODE_MENU;
     }
+    */
 }
 
 

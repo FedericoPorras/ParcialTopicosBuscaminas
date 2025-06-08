@@ -7,7 +7,6 @@
 #include <stdbool.h>
 #include <SDL.h>
 #include <SDL_image.h>
-#include "gamestate.h"
 
 #define OK 0
 #define MEM_ERR 1

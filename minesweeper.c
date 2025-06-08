@@ -1,6 +1,6 @@
 #include "minesweeper.h"
 
-#include <windows.h>
+//#include <windows.h>
 
 void emptyField(int rows, int cols, mineCeld** field) {
     for (int i=0; i<rows; i++) {
@@ -20,11 +20,14 @@ int randomBombs(int rows, int cols, mineCeld** field, int ammount, int seed, int
     }
     else srand(seed); // or random it
 
-    // Put the bombs
+    // Put the bombs -> TODO: Put in a func to avoid warnings
     int i=0;
+    int randomNum1, randomNum2;
     while(i<ammount) {
-
-        mineCeld* random = &(field[rand()%rows][rand()%cols]);
+        randomNum1 = rand();
+        randomNum2 = rand();
+        //Sleep(100);
+        mineCeld* random = &(field[randomNum1%rows][randomNum2%cols]);
         if (!random->bomb && random != &field[*pos][*(pos+1)]) {
             random->bomb = true;
             i++;
@@ -132,7 +135,7 @@ void coverAll(int rows, int cols, mineCeld** field) {
 bool checkWin(int rows, int cols, mineCeld** field) {
     for (int i=0; i<rows; i++) {
         for (int j=0; j<cols; j++) {
-            if ((!field[i][j].revealed && !(field[i][j].flag && field[i][j].bomb)) || field[i][j].loose) return false; // TODO: CHANGE, loose will be analized in other function
+            if (!field[i][j].revealed && !(field[i][j].flag && field[i][j].bomb)) return false; // TODO: CHANGE, loose will be analized in other function
         }
     }
     return true;

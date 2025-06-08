@@ -7,10 +7,11 @@
 #include <stdlib.h>
 #include <time.h>
 
-#include "graphics.h"
-#include "minesweeper.h"
-#include "configs.h"
+#include "graphics.h" //
 #include "gamestate.h"
+#include "configs.h"
+#include "minesweeper.h"
+
 
 #define WIDTH 1366
 #define HEIGHT 768
@@ -49,17 +50,15 @@
 #define GRAL_ERR 4
 #define TEX_ERR 5
 
-
-
 typedef struct Section {
-    void (*init)(SDL_Renderer* renderer, GameState* game, GHP_TexturesData* tex, int* mode);
+    void (*init)(SDL_Renderer* renderer, GameState* game, GHP_TexturesData* tex, ConfigData* configData, int* mode);
     void (*handler)(SDL_Renderer* renderer, GameState* game, GHP_TexturesData* tex, SDL_Event* event, int* mode);
     void (*render)(SDL_Renderer* renderer, GameState* game, GHP_TexturesData* tex, int* mode);
 } Section;
 
 
 // generals
-bool initGame(GameState* game);
+bool initGame(GameState* game, ConfigData* configs);
 void draw_init(SDL_Renderer* renderer, GameState* game, GHP_TexturesData* tex_data);
 int initTexData(GHP_TexturesData* tex_data, SDL_Renderer* renderer, GameState* game);
 void** newDinMtx(int rows, int cols, int len);
@@ -70,16 +69,16 @@ void userAuxActionCeld(int i, int j, GameState* game);
 void draw_menu(SDL_Renderer* renderer, GameState* game, GHP_TexturesData* TexData);
 void logFileWriteClick(char button, int* posInMesh, FILE* file);
 void renderMeshUpdated(SDL_Renderer* renderer, GameState* game, GHP_TexturesData* tex, GHP_Mesh mesh);
-void handleButtonsClick(GHP_Button* buttons, int ammount, int x, int y, GameState* game, int* mode);
+void handleButtonsClick(GHP_Button* buttons, int ammount, int x, int y, GameState* game, int* mode, SDL_Event* event);
 int initButtons(SDL_Renderer* renderer, GHP_TexturesData* buttons);
 
 // for menus
-void initPlay(SDL_Renderer* renderer, GameState* game, GHP_TexturesData* tex, int* mode);
+void initPlay(SDL_Renderer* renderer, GameState* game, GHP_TexturesData* tex, ConfigData* configData, int* mode);
 void handlerPlay(SDL_Renderer* renderer, GameState* game, GHP_TexturesData* tex, SDL_Event* event, int* mode);
 void renderPlay(SDL_Renderer* renderer, GameState* game, GHP_TexturesData* tex, int* mode);
-void initMenu(SDL_Renderer* renderer, GameState* game, GHP_TexturesData* tex, int* mode);
+void initMenu(SDL_Renderer* renderer, GameState* game, GHP_TexturesData* tex, ConfigData* configData, int* mode);
 void handlerMenu(SDL_Renderer* renderer, GameState* game, GHP_TexturesData* tex, SDL_Event* event, int* mode);
-void initLost(SDL_Renderer* renderer, GameState* game, GHP_TexturesData* tex, int* mode);
+void initLost(SDL_Renderer* renderer, GameState* game, GHP_TexturesData* tex, ConfigData* configData, int* mode);
 void handlerLost(SDL_Renderer* renderer, GameState* game, GHP_TexturesData* tex, SDL_Event* event, int* mode);
 
 // for buttons

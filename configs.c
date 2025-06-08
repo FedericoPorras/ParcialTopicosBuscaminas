@@ -1,7 +1,7 @@
 #include "configs.h"
 
-bool initConfig(GameState* game) {
-    nullGame(game);
+bool initConfig(ConfigData* configs) {
+    nullConfig(configs);
     FILE* Fconfig = fopen("buscaminas.conf", "rt");
     if (!Fconfig) {
         printf("\nError opening the configuration file. Default configuration will be used");
@@ -12,23 +12,23 @@ bool initConfig(GameState* game) {
     char lastChar;
     while (fscanf(Fconfig, "\n%[a-zA-Z]=%f%c", option, &value, &lastChar) > 0) { // TODO: Check max string tolerable / remember if fscanf reachs EOF returns -1
         if (strcmp(option, "columnas") == 0)
-            game->columns=(int)value;
+            configs->cols=(int)value;
         else if (strcmp(option, "filas") == 0)
-            game->rows=(int)value;
+            configs->rows=(int)value;
         else if (strcmp(option, "semilla") == 0)
-            game->seed=(int)value;
+            configs->seed=(int)value;
         else if (strcmp(option, "minas") == 0) {
-            if (lastChar == '%') game->bombsPer = value;
-            else game->bombsNum = (int)value;
+            if (lastChar == '%') configs->minesPer = value;
+            else configs->minesNum = (int)value;
         }
     }
     fclose(Fconfig);
 
     // This has to be here because in the loop you may don't know cols and rows
-    if (game->bombsNum > 0) game->bombsPer = (float)(game->columns * game->rows) / game->bombsNum;
-    else game->bombsNum = (int)((game->columns * game->rows) * (game->bombsPer / 100));
+    if (configs->minesNum > 0) configs->minesPer = (float)(configs->cols * configs->rows) / configs->minesNum;
+    else configs->minesNum = (int)((configs->cols * configs->rows) * (configs->minesPer / 100));
 
-    if (validConfig(game)) return true;
+    if (validConfig(configs)) return true;
     else {
         printf("\nError loading the configuration file. Default configuration will be used");
         return false;
@@ -36,13 +36,13 @@ bool initConfig(GameState* game) {
 
 }
 
-bool validConfig(GameState* game) {
+bool validConfig(ConfigData* configs) {
     if (
-        (game->bombsNum < MIN_BOMBS || game->bombsNum > MAX_BOMBS || game->bombsNum > game->columns * game->rows) ||
-        (game->bombsPer < MIN_PER || game->bombsPer > MAX_PER) ||
-        (game->columns < MIN_COLS || game->columns > MAX_COLS) ||
-        (game->rows < MIN_ROWS || game->rows > MAX_ROWS) ||
-        !game->seed
+        (configs->minesNum < MIN_BOMBS || configs->minesNum > MAX_BOMBS || configs->minesNum > configs->cols * configs->rows) ||
+        (configs->minesPer < MIN_PER || configs->minesPer > MAX_PER) ||
+        (configs->cols < MIN_COLS || configs->cols > MAX_COLS) ||
+        (configs->rows < MIN_ROWS || configs->rows > MAX_ROWS) ||
+        !configs->seed
     )
         return false;
     else return true;
@@ -59,5 +59,18 @@ bool resetConfig() {
     fwrite(def, sizeof(def), 1, defaultConfig); // sizeof(def) or strlen ?
     fclose(defaultConfig);
     return true;
+}
+
+void nullConfig(ConfigData* configs) {
+    configs->rows = -1; configs->cols = -1;
+    configs->minesNum = -1;
+    configs->seed = -1;
+}
+
+void applyConfig(ConfigData* configs, GameState* game) {
+    game->rows = configs->rows;
+    game->columns = configs->cols;
+    game->seed = configs->seed;
+    game->bombsNum = configs->minesNum;
 }
 

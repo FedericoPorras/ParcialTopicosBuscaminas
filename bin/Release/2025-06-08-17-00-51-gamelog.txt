@@ -1,0 +1,9 @@
+DATE:2025-5-8-17-0-51
+SEED:1749412851
+Event:Click/Type:L/PosMesh:(05,05)/Date:(2025-06-08-17-00-52)
+Event:Click/Type:L/PosMesh:(06,03)/Date:(2025-06-08-17-00-52)
+Event:Click/Type:L/PosMesh:(09,02)/Date:(2025-06-08-17-00-52)
+Event:Click/Type:L/PosMesh:(11,06)/Date:(2025-06-08-17-00-52)
+Event:Click/Type:L/PosMesh:(11,10)/Date:(2025-06-08-17-00-53)
+Event:Click/Type:L/PosMesh:(07,11)/Date:(2025-06-08-17-00-53)
+END_GAME:game_lost

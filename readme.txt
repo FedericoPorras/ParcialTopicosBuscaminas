@@ -39,4 +39,14 @@ AUTOREVEAL BOMB END GAME
 CHANGE DIM IN SDL (how?)
 SOME OPTIONS FROM SDL SELECTIONS
 
+
+HOVER LIGHT
 BETTER TEXTURES / VIEW -> PERSONALIZE
+
+
+DEPENDENCIES:
+gamestate -> none
+graphics -> none
+minesweeper -> gamestate
+configs -> gamestate
+main -> all

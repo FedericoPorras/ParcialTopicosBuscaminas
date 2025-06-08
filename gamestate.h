@@ -10,7 +10,6 @@ typedef struct {
     bool flag;
     bool question_mark; // to be implemented
     bool revealed;
-    bool loose; // TODO: CHANGE IT! DELETE IT!
     int adjacency;
 } mineCeld; // maybe then add a cheat or sth
 
@@ -20,12 +19,12 @@ typedef struct {
     int columns;
     int rows;
     int bombsNum;
-    float bombsPer; // percentage
+    int lost[2];
     mineCeld** field;
     FILE* logFile;
 } GameState;
 
-void nullGame(GameState* game); // TODO: Use it, replace other aparitions
+void nullGame(GameState* game);
 void printGame(GameState* game);
 
 #endif // GAMESTATE_H_INCLUDED
