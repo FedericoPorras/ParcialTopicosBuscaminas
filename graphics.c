@@ -2,6 +2,7 @@
 
 #include "graphics.h"
 
+
 bool GHP_SetWindow(struct GHP_WindowData* windowData, char* name, Reaction react, int width, int height, void* gameData, GHP_TexturesData* textures) {
     // Initialize SDL and calls the react function. It will has as arguments the renderer, void* gameData for any info of the game, GHP_TexturesData*, and a draw function
 
@@ -26,11 +27,17 @@ bool GHP_SetWindow(struct GHP_WindowData* windowData, char* name, Reaction react
         return false;
     }
 
+    if (TTF_Init() == -1) {
+        printf("\nError initializing SDL_ttf: %s\n", TTF_GetError());
+        return false;
+    }
+
     SDL_SetRenderDrawBlendMode(windowData->renderer, SDL_BLENDMODE_BLEND); // transparence
 
     react(windowData->renderer, gameData, textures); // all functionality given from the user
     SDL_Delay(100); // to wait a little bit before closing and avoid consuming too resources
 
+    TTF_Quit();
     SDL_DestroyRenderer(windowData->renderer);
     SDL_DestroyWindow(windowData->window);
     SDL_Quit();
@@ -44,10 +51,23 @@ void GHP_DestroyWindow(struct GHP_WindowData* windowData) {
     SDL_Quit();
 }
 
+void GHP_DestroyTexturesData(GHP_TexturesData* data) {
+    for (int i=0; i<data->texts_loaded; i++)
+        free(data->textsTexs->tex);
+    free(data->textsTexs);
+    for (int i=0; i<data->buttons_loaded; i++)
+        free(data->buttons->tex);
+    free(data->buttonsTexs);
+    for (int i=0; i<data->textures_loaded; i++)
+        free(data->textures->tex);
+    free(data->textures);
+
+}
+
 GHP_Texture GHP_newTexture(SDL_Renderer* renderer, const char* path, int offsetX, int offsetY, int width, int height) {
     // Initialize a texture. offsets of the asset.
 
-    SDL_Texture* sdl_tex = IMG_LoadTexture(renderer, path); // Don't worry, SDL use dynamic memory so it wont be deleted
+    SDL_Texture* sdl_tex = IMG_LoadTexture(renderer, path); // TODO: Free
     if (!sdl_tex) {
         printf("\nError loading texture: %s\n", IMG_GetError());
         return (GHP_Texture){NULL, -1, -1, -1, -1};
@@ -66,7 +86,7 @@ void GHP_renderTexture(SDL_Renderer* renderer, GHP_Texture* ghp_tex, int offsetX
     SDL_Rect ghp_tex_rect = {ghp_tex->offsetX, ghp_tex->offsetY, ghp_tex->width, ghp_tex->height};
     SDL_Rect window_rect = {offsetX, offsetY, ghp_tex->width, ghp_tex->height};
 
-    SDL_RenderCopy(renderer, ghp_tex->tex, &ghp_tex_rect, &window_rect); // ACA CRASHEA
+    SDL_RenderCopy(renderer, ghp_tex->tex, &ghp_tex_rect, &window_rect); // TODO ACA CRASHEA
 }
 
 void GHP_destroyTexture(GHP_Texture* ghp_tex) {
@@ -163,6 +183,62 @@ void GHP_newButtonAbs(SDL_Renderer* renderer, char* path, GHP_TexturesData* texD
 
 void GHP_renderButton(SDL_Renderer* renderer, GHP_Button* button) {
     GHP_renderTexture(renderer, button->tex, button->windowX, button->windowY);
+}
+
+GHP_Texture GHP_textTexture(SDL_Renderer* renderer, char* pathFont, int sizeFont, SDL_Color color, char* text) {
+    // when text = '\0' it has an error, but does not inform because all texts could be '\0' at first. User is supposed that user will handle it.
+
+    TTF_Font* font = TTF_OpenFont(pathFont, sizeFont);
+    if (!font) {
+        printf("\nError loading text font.");
+        return (GHP_Texture){NULL, -1, -1, -1, -1};
+    }
+
+    SDL_Surface* surface = TTF_RenderText_Blended(font, text, color);
+    if (!surface && strcmp(text,"")!=0) {
+        printf("\nT:[%s]", text);
+        printf("\nError generating text surface.");
+        TTF_CloseFont(font);
+        return (GHP_Texture){NULL, -1, -1, -1, -1};
+    }
+    SDL_Texture* tex = SDL_CreateTextureFromSurface(renderer, surface);
+    SDL_FreeSurface(surface);
+    if (!tex && strcmp(text,"")!=0) {
+        printf("\nError generating text texture.");
+        TTF_CloseFont(font);
+        return (GHP_Texture){NULL, -1, -1, -1, -1};
+    }
+
+    int w, h;
+    SDL_QueryTexture(tex, NULL, NULL, &w, &h); // get the real size
+
+    TTF_CloseFont(font);
+
+    return (GHP_Texture){tex, 0, 0, w, h};
+}
+
+void GHP_newText(SDL_Renderer* renderer, char* path, GHP_TexturesData* texData, GHP_Text* text, int windowX, int windowY, int sizeFont, SDL_Color color) {
+    texData->textsTexs[texData->texts_loaded] = GHP_textTexture(renderer, path, sizeFont, color, text->text);
+    text->tex = &(texData->textsTexs[texData->texts_loaded]);
+    texData->buttons_loaded++;
+
+    if(!text->tex) {
+        printf("\nError loading a text texture.");
+        text->tex = NULL;
+    }
+
+    text->windowX = windowX;
+    text->windowY = windowY;
+
+    if (strlen(path) > 50) {
+        printf("\nError generating text texture. Limit of 50 chars exceeded");
+        text->tex = NULL;
+    } else
+        strcpy(text->path,path);
+}
+
+void GHP_updateTextTexture(SDL_Renderer* renderer, GHP_TexturesData* texData, int numberText, int sizeFont, SDL_Color color) {
+    texData->textsTexs[numberText] = GHP_textTexture(renderer, texData->texts[numberText].path, sizeFont, color, texData->texts[numberText].text);
 }
 
 

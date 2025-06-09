@@ -1,4 +1,5 @@
 #include "main.h"
+#include <windows.h> // TODO DELETE
 
 // TODO: void autoFlag / When you click and the only option is to be a flag in a celd to fill it with the flag
 // this could be an extra functionality
@@ -15,9 +16,7 @@ int main (int argc, char *argv[]) {
     struct GHP_WindowData myWindow;
     if (GHP_SetWindow(&myWindow, nameWindow, react, WIDTH, HEIGHT, &configs, &tex_data)) { // it returns true at the end of the game
         GHP_DestroyWindow(&myWindow);
-        free(tex_data.buttons);
-        free(tex_data.buttonsTexs);
-        free(tex_data.textures);
+        GHP_DestroyTexturesData(&tex_data);
     }
 
     //srand(time(NULL));
@@ -55,7 +54,8 @@ void react(SDL_Renderer* renderer, void* gameData, GHP_TexturesData* TexData) {
     Section SectionPool[] = {
         {initMenu, handlerMenu, NULL},
         {initPlay, handlerPlay, renderPlay},
-        {initLost, handlerLost, NULL}
+        {initLost, handlerLost, NULL},
+        {initNameplayer, handlerNameplayer, renderNameplayer}
     };
 
 
@@ -103,6 +103,7 @@ void react(SDL_Renderer* renderer, void* gameData, GHP_TexturesData* TexData) {
 
     }
 
+    destroyDinMtx(game.rows, game.columns, sizeof(mineCeld), (void**)game.field);
 }
 
 
@@ -148,42 +149,67 @@ int initTexData(GHP_TexturesData* tex_data, SDL_Renderer* renderer, GameState* g
     // load textures
     char path[19];
     sprintf(path, "img/celds%dx%d.png", stdDimGrid[i], stdDimGrid[i]);
-    while (GHP_loadRectAsset(renderer, path, &(tex_data->textures), AMMOUNT_TEXTURES, stdDimPix[i], stdDimPix[i], AMM_TEXT_COL_ASSET) != OK && i<= AMMOUNT_ASSETS ) {
+    while (GHP_loadRectAsset(renderer, path, &(tex_data->textures), AMMOUNT_TEXTURES, stdDimPix[i], stdDimPix[i], AMM_TEXT_COL_ASSET) != OK && i<= AMMOUNT_ASSETS ){
         // at least try to render other asset
-        printf("\nFile of field %s not found, trying to use another one asset.", path);
+        printf("\nFile of field %s not found, trying to use another asset.", path);
         i++;
         sprintf(path, "img/celds%dx%d.png", stdDimGrid[i], stdDimGrid[i]);
-        GHP_loadRectAsset(renderer, path, &(tex_data->textures), AMMOUNT_TEXTURES, stdDimPix[i], stdDimPix[i], AMM_TEXT_COL_ASSET);
+        //GHP_loadRectAsset(renderer, path, &(tex_data->textures), AMMOUNT_TEXTURES, stdDimPix[i], stdDimPix[i], AMM_TEXT_COL_ASSET);
     }
 
-    if (i > AMMOUNT_ASSETS)
+    if (i > AMMOUNT_ASSETS) {
+        printf("\nDimension error"); // TODO: Check this error
         return FILE_ERR;
+    }
 
     if (!tex_data->textures) {
+        printf("\nError loading textures.");
         return MEM_ERR;
     }
+
+    tex_data->textures_loaded = AMMOUNT_TEXTURES;
+
 
     // set mesh
     int offset_to_centerX = (WIDTH_SPACE_MESH_MINES - game->columns * stdDimPix[i]) / 2;
     int offset_to_centerY = (HEIGHT - game->rows * stdDimPix[i]) / 2;
     tex_data->active_mesh = (GHP_Mesh){offset_to_centerX, offset_to_centerY, &(tex_data->textures[TEX_HIDDEN]), game->rows, game->columns};
 
-    // load buttons
+    // mallocs for buttons and texts
     tex_data->buttons = malloc(sizeof(GHP_Button)*AMMOUNT_BUTTONS);
     tex_data->buttonsTexs = malloc(sizeof(GHP_Texture)*AMMOUNT_BUTTONS);
     tex_data->buttons_loaded = 0;
 
+    tex_data->texts = malloc(sizeof(GHP_Text)*AMMOUNT_TEXTS);
+    tex_data->textsTexs = malloc(sizeof(GHP_Texture)*AMMOUNT_TEXTS);
+    tex_data->texts_loaded = 0;
+
     if (initButtons(renderer, tex_data) != OK) return TEX_ERR;
+    if (initTexts(renderer, tex_data) != OK) return TEX_ERR;
 
     return OK;
 }
 
-int initButtons(SDL_Renderer* renderer, GHP_TexturesData* texData) { // PROBLEM HERE
+int initButtons(SDL_Renderer* renderer, GHP_TexturesData* texData) {
     GHP_newButtonAbs(renderer, "img/buttons.png", texData, &texData->buttons[BUT_START], 0, 0, 289, 153, (WIDTH-289)/2, 30, setModePlay);
     GHP_newButtonAbs(renderer, "img/buttons.png", texData, &texData->buttons[BUT_PLAYAGAIN], 328, 34, 653, 308, 1000, (HEIGHT-(308-34))/2, setModeMenu);
+    GHP_newButtonAbs(renderer, "img/buttons.png", texData, &texData->buttons[BUT_NAMEPLAYER], 722, 39, 1086, 250, (WIDTH-289)/2, 30+153+30, setModeNameplayer);
 
     for(int i=0; i<AMMOUNT_BUTTONS; i++) {
         if (! (texData->buttons + i)->tex ) {
+            printf("\nError loading the buttons.");
+            return TEX_ERR; // could be file
+        }
+    }
+    return OK;
+}
+
+int initTexts(SDL_Renderer* renderer, GHP_TexturesData* texData) {
+    SDL_Color myColor = {255, 255, 255, 255};
+    GHP_newText(renderer, "ttf/Consolas-Regular.ttf", texData, &(texData->texts[0]), 600, 300, 20, myColor);
+
+    for(int i=0; i<AMMOUNT_TEXTS; i++) {
+        if (! (texData->texts + i)->tex ) {
             printf("\nError loading the buttons.");
             return TEX_ERR; // could be file
         }
@@ -208,6 +234,13 @@ void** newDinMtx(int rows, int cols, int len) {
         }
     }
     return rv;
+}
+
+void destroyDinMtx(int rows, int cols, int len, void** mtx) {
+    for (int i=0; i<rows; i++) {
+        free(*(mtx+i));
+    }
+    free(mtx);
 }
 
 int userRevealCeld(int i, int j, GameState* game) {
@@ -363,12 +396,13 @@ void renderPlay(SDL_Renderer* renderer, GameState* game, GHP_TexturesData* tex, 
 void initMenu(SDL_Renderer* renderer, GameState* game, GHP_TexturesData* tex, ConfigData* configData, int* mode) {
     GHP_setBGColor(renderer, 255, 0, 0, 255);
     GHP_renderButton(renderer, &tex->buttons[BUT_START]);
-    //GHP_Texture texButStart = GHP_newTexture(renderer, "img/buttons.png", 0, 0, 289, 153);
-    //GHP_renderTexture(renderer, &texButStart, 50, 50);
+    GHP_renderButton(renderer, &tex->buttons[BUT_NAMEPLAYER]);
+
+
 }
 
 void handlerMenu(SDL_Renderer* renderer, GameState* game, GHP_TexturesData* tex, SDL_Event* event, int* mode) {
-    GHP_Button buttons[] = {tex->buttons[BUT_START]};
+    GHP_Button buttons[] = {tex->buttons[BUT_START], tex->buttons[BUT_NAMEPLAYER]};
     handleButtonsClick(buttons, AMMOUNT_BUTTONS, event->button.x, event->button.y, game, mode, event);
     /*
     int pos[2][2] = {{50, 50}, {50+289, 50+153}};
@@ -400,7 +434,51 @@ void handlerLost(SDL_Renderer* renderer, GameState* game, GHP_TexturesData* tex,
     */
 }
 
+// Nameplayer
 
+void initNameplayer(SDL_Renderer* renderer, GameState* game, GHP_TexturesData* tex, ConfigData* configData, int* mode) {
+    SDL_StartTextInput();
+    GHP_setBGColor(renderer, 0, 0, 255, 255);
+    GHP_renderButton(renderer, &tex->buttons[BUT_START]);
+}
+
+void handlerNameplayer(SDL_Renderer* renderer, GameState* game, GHP_TexturesData* tex, SDL_Event* event, int* mode) {
+    GHP_Button buttons[] = {tex->buttons[BUT_START]};
+    handleButtonsClick(buttons, AMMOUNT_BUTTONS, event->button.x, event->button.y, game, mode, event);
+
+    if (event->type == SDL_TEXTINPUT) {
+        if (strlen(tex->texts[0].text)+1 < GHP_TEXT_LIMIT) {
+            strcat(tex->texts[0].text, event->text.text);
+            printf("\n (%02d) TEXT: %s", (int)strlen(tex->texts[0].text) ,tex->texts[0].text);
+            SDL_Color myColor = {255, 255, 255, 255};
+            GHP_updateTextTexture(renderer, tex, 0, 40, myColor);
+        }
+    } else if (event->type == SDL_KEYDOWN) {
+        if (event->key.keysym.sym == SDLK_BACKSPACE && strlen(tex->texts[0].text) > 0) {
+            printf("\nChar deleted");
+            tex->texts[0].text[strlen(tex->texts[0].text)-1] = '\0';
+            printf("\n (%02d) TEXT: %s", (int)strlen(tex->texts[0].text) ,tex->texts[0].text);
+            SDL_Color myColor = {255, 255, 255, 255};
+            GHP_updateTextTexture(renderer, tex, 0, 40, myColor);
+        }
+    }
+
+}
+
+void renderNameplayer(SDL_Renderer* renderer, GameState* game, GHP_TexturesData* tex, int* mode) {
+    GHP_setBGColor(renderer, 0, 0, 255, 255);
+    GHP_renderButton(renderer, &tex->buttons[BUT_START]);
+    GHP_renderTexture(renderer, tex->texts->tex, 750, 300);
+}
+
+
+    /*
+    int pos[2][2] = { {1000, 300}, {1000 + 653 - 328, 300 + 308 - 34} };
+    if (event->button.button == SDL_BUTTON_LEFT) {
+        if (GHP_clickIn(event->button.x, event->button.y, pos))
+            *mode = MODE_MENU;
+    }
+    */
 
 
 
@@ -408,8 +486,9 @@ void handlerLost(SDL_Renderer* renderer, GameState* game, GHP_TexturesData* tex,
 // Buttons
 
 // typedef void (*ButtonReaction)(void* gameData, int* mode);
-void setModePlay(void* gameData, int* mode) {*mode = MODE_PLAY;}
+void setModePlay(void* gameData, int* mode) {SDL_StartTextInput(); *mode = MODE_PLAY;}
 void setModeMenu(void* gameData, int* mode) {*mode = MODE_MENU;}
 void setModeLost(void* gameData, int* mode) {*mode = MODE_LOST;}
+void setModeNameplayer(void* gameData, int* mode) {*mode = MODE_NAMEPLAYER;}
 
 

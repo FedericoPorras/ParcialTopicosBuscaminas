@@ -17,6 +17,7 @@
 #define HEIGHT 768
 #define WIDTH_SPACE_MESH_MINES 768
 
+#define MODE_NAMEPLAYER 3
 #define MODE_LOST 2
 #define MODE_PLAY 1
 #define MODE_MENU 0
@@ -33,11 +34,13 @@
 
 #define BUT_START 0
 #define BUT_PLAYAGAIN 1
+#define BUT_NAMEPLAYER 2
 
 #define AMMOUNT_TEXTURES 14
 #define AMM_TEXT_COL_ASSET 7
 #define AMMOUNT_ASSETS 7
-#define AMMOUNT_BUTTONS 2
+#define AMMOUNT_BUTTONS 3
+#define AMMOUNT_TEXTS 1
 
 #define CELD_EMPTY 0
 #define CELD_BOMB 1
@@ -62,6 +65,7 @@ bool initGame(GameState* game, ConfigData* configs);
 void draw_init(SDL_Renderer* renderer, GameState* game, GHP_TexturesData* tex_data);
 int initTexData(GHP_TexturesData* tex_data, SDL_Renderer* renderer, GameState* game);
 void** newDinMtx(int rows, int cols, int len);
+void destroyDinMtx(int rows, int cols, int len, void** mtx);
 void initField(GameState* game, int pos[2]);
 void react(SDL_Renderer* renderer, void* gameData, GHP_TexturesData* TexData);
 int userRevealCeld(int i, int j, GameState* game);
@@ -71,6 +75,7 @@ void logFileWriteClick(char button, int* posInMesh, FILE* file);
 void renderMeshUpdated(SDL_Renderer* renderer, GameState* game, GHP_TexturesData* tex, GHP_Mesh mesh);
 void handleButtonsClick(GHP_Button* buttons, int ammount, int x, int y, GameState* game, int* mode, SDL_Event* event);
 int initButtons(SDL_Renderer* renderer, GHP_TexturesData* buttons);
+int initTexts(SDL_Renderer* renderer, GHP_TexturesData* texData);
 
 // for menus
 void initPlay(SDL_Renderer* renderer, GameState* game, GHP_TexturesData* tex, ConfigData* configData, int* mode);
@@ -80,11 +85,14 @@ void initMenu(SDL_Renderer* renderer, GameState* game, GHP_TexturesData* tex, Co
 void handlerMenu(SDL_Renderer* renderer, GameState* game, GHP_TexturesData* tex, SDL_Event* event, int* mode);
 void initLost(SDL_Renderer* renderer, GameState* game, GHP_TexturesData* tex, ConfigData* configData, int* mode);
 void handlerLost(SDL_Renderer* renderer, GameState* game, GHP_TexturesData* tex, SDL_Event* event, int* mode);
+void initNameplayer(SDL_Renderer* renderer, GameState* game, GHP_TexturesData* tex, ConfigData* configData, int* mode);
+void handlerNameplayer(SDL_Renderer* renderer, GameState* game, GHP_TexturesData* tex, SDL_Event* event, int* mode);
+void renderNameplayer(SDL_Renderer* renderer, GameState* game, GHP_TexturesData* tex, int* mode);
 
 // for buttons
 void setModePlay(void* gameData, int* mode);
 void setModeMenu(void* gameData, int* mode);
 void setModeLost(void* gameData, int* mode);
-
+void setModeNameplayer(void* gameData, int* mode);
 
 #endif // MAIN_H_INCLUDED

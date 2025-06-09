@@ -1,6 +1,7 @@
 # depslib dependency file v1.0
-1749411630 source:d:\facu\topicos\tpparcial\main.c
+1749430238 source:d:\facu\topicos\tpparcial\main.c
 	"main.h"
+	<windows.h>
 
 1748607470 d:\facu\topicos\tpparcial\graphics\graphics.c
 	"graphics.h"
@@ -396,7 +397,7 @@
 	"begin_code.h"
 	"close_code.h"
 
-1749411330 d:\facu\topicos\tpparcial\main.h
+1749428727 d:\facu\topicos\tpparcial\main.h
 	<SDL.h>
 	<stdbool.h>
 	<stdio.h>
@@ -417,14 +418,16 @@
 1749411257 source:d:\facu\topicos\tpparcial\minesweeper.c
 	"minesweeper.h"
 
-1749407799 source:d:\facu\topicos\tpparcial\graphics.c
+1749430465 source:d:\facu\topicos\tpparcial\graphics.c
 	"graphics.h"
 
-1749407821 d:\facu\topicos\tpparcial\graphics.h
+1749430050 d:\facu\topicos\tpparcial\graphics.h
 	<stdio.h>
 	<stdbool.h>
+	<string.h>
 	<SDL.h>
 	<SDL_image.h>
+	<SDL_ttf.h>
 
 1650910406 d:\facu\topicos\tpparcial\sdl2-2.0.22\x86_64-w64-mingw32\include\sdl2\sdl.h
 	"SDL_main.h"
@@ -1213,6 +1216,11 @@
 1741049608 d:\facu\topicos\tpparcial\lib\sdl_image.h
 	"SDL.h"
 	"SDL_version.h"
+	"begin_code.h"
+	"close_code.h"
+
+1735843588 d:\facu\topicos\tpparcial\lib\sdl_ttf.h
+	"SDL.h"
 	"begin_code.h"
 	"close_code.h"
 
