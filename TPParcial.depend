@@ -1,5 +1,5 @@
 # depslib dependency file v1.0
-1749495432 source:d:\facu\topicos\tpparcial\main.c
+1749504789 source:d:\facu\topicos\tpparcial\main.c
 	"main.h"
 	<windows.h>
 
@@ -397,7 +397,7 @@
 	"begin_code.h"
 	"close_code.h"
 
-1749493195 d:\facu\topicos\tpparcial\main.h
+1749502624 d:\facu\topicos\tpparcial\main.h
 	<SDL.h>
 	<stdbool.h>
 	<stdio.h>

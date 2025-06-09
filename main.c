@@ -56,7 +56,9 @@ void react(SDL_Renderer* renderer, void* gameData, GHP_TexturesData* TexData) {
         {initPlay, handlerPlay, renderPlay},
         {initLost, handlerLost, NULL},
         {initNameplayer, handlerNameplayer, renderNameplayer},
-        {initWin, handlerWin, NULL}
+        {initWin, handlerWin, NULL},
+        {initSearchFile, handlerSearchFile, renderSearchFile},
+        {initReplay, handlerReplay, renderReplay}
     };
 
 
@@ -196,6 +198,8 @@ int initButtons(SDL_Renderer* renderer, GHP_TexturesData* texData) {
     GHP_newButtonAbs(renderer, "img/buttons.png", texData, &texData->buttons[BUT_NAMEPLAYER], 722, 39, 1086, 250, setModeMenu); // 250, (WIDTH-289)/2, 30+153+30
     GHP_newButtonAbs(renderer, "img/buttons.png", texData, &texData->buttons[BUT_MENU], 89, 382, 453, 593, setModeMenu); // (WIDTH-(453-89))/2, (HEIGHT-(593-328))*0.75,
     GHP_newButtonAbs(renderer, "img/buttons.png", texData, &texData->buttons[BUT_SAVENAME], 597, 385, 961, 520, setModeNameplayer); // (WIDTH-(961-597))/2, HEIGHT-(520-385)-30,
+    GHP_newButtonAbs(renderer, "img/buttons.png", texData, &texData->buttons[BUT_SEARCHDIR], 597, 565, 961, 700, setModeSearchDir);
+    GHP_newButtonAbs(renderer, "img/buttons.png", texData, &texData->buttons[BUT_REPLAYACTION], 97, 640, 228, 763, NULL);
 
     for(int i=0; i<AMMOUNT_BUTTONS; i++) {
         if (! (texData->buttons + i)->tex ) {
@@ -307,7 +311,8 @@ void handleButtonsClick(GHP_Button* buttons, int ammount, int x, int y, GameStat
               (buttons+i)->curWindowY + (buttons+i)->tex->height }
         };
         if (event->type == SDL_MOUSEBUTTONDOWN && event->button.button == SDL_BUTTON_LEFT && GHP_clickIn(x, y, pos)) {
-            (buttons+i)->on_click(game, mode);
+            if ((buttons+i)->on_click) // TODO: Join the condition
+                (buttons+i)->on_click(game, mode);
         }
     }
 }
@@ -338,6 +343,7 @@ void initPlay(SDL_Renderer* renderer, GameState* game, GHP_TexturesData* tex, Co
     } else
         fwrite(initTimeLog, sizeof(char), strlen(initTimeLog), game->logFile);
 
+    fprintf(game->logFile, "\nDIMENSION:%dx%d\nMINES:%d", game->rows, game->columns, game->bombsNum); // TODO: Join both texts
 
     // log() -> time(START, END, GAME_TIME) pos(X,Y) action(PRESSED/FLAGGED/UNFLAGGED)
     // log_seed() -> SEED XXXXX
@@ -399,13 +405,12 @@ void renderPlay(SDL_Renderer* renderer, GameState* game, GHP_TexturesData* tex, 
 void initMenu(SDL_Renderer* renderer, GameState* game, GHP_TexturesData* tex, ConfigData* configData, int* mode) {
     GHP_setBGColor(renderer, 255, 0, 0, 255);
     GHP_renderButton(renderer, &tex->buttons[BUT_START], (WIDTH-289)/2, 30);
-
-
+    GHP_renderButton(renderer, &tex->buttons[BUT_SEARCHDIR], (WIDTH-(961-597))/2 , HEIGHT*0.7);
 }
 
 void handlerMenu(SDL_Renderer* renderer, GameState* game, GHP_TexturesData* tex, SDL_Event* event, int* mode) {
-    GHP_Button buttons[] = {tex->buttons[BUT_START]};
-    handleButtonsClick(buttons, 1, event->button.x, event->button.y, game, mode, event);
+    GHP_Button buttons[] = {tex->buttons[BUT_START], tex->buttons[BUT_SEARCHDIR]};
+    handleButtonsClick(buttons, 2, event->button.x, event->button.y, game, mode, event);
     /*
     int pos[2][2] = {{50, 50}, {50+289, 50+153}};
     if (event->type == SDL_MOUSEBUTTONDOWN && event->button.button == SDL_BUTTON_LEFT
@@ -455,15 +460,12 @@ void handlerNameplayer(SDL_Renderer* renderer, GameState* game, GHP_TexturesData
     if (event->type == SDL_TEXTINPUT) {
         if (strlen(tex->texts[0].text)+1 < GHP_TEXT_LIMIT) {
             strcat(tex->texts[0].text, event->text.text);
-            printf("\n (%02d) TEXT: %s", (int)strlen(tex->texts[0].text) ,tex->texts[0].text);
             SDL_Color myColor = {255, 255, 255, 255};
             GHP_updateTextTexture(renderer, tex, 0, 40, myColor);
         }
     } else if (event->type == SDL_KEYDOWN) {
         if (event->key.keysym.sym == SDLK_BACKSPACE && strlen(tex->texts[0].text) > 0) {
-            printf("\nChar deleted");
             tex->texts[0].text[strlen(tex->texts[0].text)-1] = '\0';
-            printf("\n (%02d) TEXT: %s", (int)strlen(tex->texts[0].text) ,tex->texts[0].text);
             SDL_Color myColor = {255, 255, 255, 255};
             GHP_updateTextTexture(renderer, tex, 0, 40, myColor);
         }
@@ -477,6 +479,7 @@ void handlerNameplayer(SDL_Renderer* renderer, GameState* game, GHP_TexturesData
     if (event->type == SDL_MOUSEBUTTONDOWN && event->button.button == SDL_BUTTON_LEFT && GHP_clickIn(event->button.x, event->button.y, pos)) {
         fprintf(game->logFile, "\nEvent:Win/Type:N/NameUser:\"%s\"\n", tex->texts[0].text);
         fclose(game->logFile); game->logFile = NULL;
+        SDL_StopTextInput();
     }
 }
 
@@ -514,24 +517,154 @@ void handlerWin(SDL_Renderer* renderer, GameState* game, GHP_TexturesData* tex, 
     }
 }
 
+// SearchFile
+
+void initSearchFile(SDL_Renderer* renderer, GameState* game, GHP_TexturesData* tex, ConfigData* configData, int* mode) {
+    SDL_StartTextInput();
+    GHP_setBGColor(renderer, 0, 0, 255, 255);
+    GHP_renderButton(renderer, &tex->buttons[BUT_SEARCHDIR], (WIDTH-(961-597))/2 , HEIGHT*0.1);
+
+    // white rectangle border
+    SDL_Rect rect = {50, 250, WIDTH-50*2, 50};
+    SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
+    SDL_RenderDrawRect(renderer, &rect);
+}
+
+void handlerSearchFile(SDL_Renderer* renderer, GameState* game, GHP_TexturesData* tex, SDL_Event* event, int* mode) {
+
+    if (event->type == SDL_TEXTINPUT) {
+        if (strlen(tex->texts[0].text)+1 < GHP_TEXT_LIMIT) {
+            strcat(tex->texts[0].text, event->text.text);
+            SDL_Color myColor = {255, 255, 255, 255};
+            GHP_updateTextTexture(renderer, tex, 0, 40, myColor);
+        }
+    } else if (event->type == SDL_KEYDOWN) {
+        if (event->key.keysym.sym == SDLK_BACKSPACE && strlen(tex->texts[0].text) > 0) {
+            tex->texts[0].text[strlen(tex->texts[0].text)-1] = '\0';
+            SDL_Color myColor = {255, 255, 255, 255};
+            GHP_updateTextTexture(renderer, tex, 0, 40, myColor);
+        }
+    }
+
+    int pos[2][2] = { // TODO: Replace this kind of things with GHP_clickInButton
+        {tex->buttons[BUT_SEARCHDIR].curWindowX, tex->buttons[BUT_SEARCHDIR].curWindowY},
+        { tex->buttons[BUT_SEARCHDIR].tex->width + tex->buttons[BUT_SEARCHDIR].curWindowX,
+          tex->buttons[BUT_SEARCHDIR].tex->height + tex->buttons[BUT_SEARCHDIR].curWindowY, }
+    };
+    if (event->type == SDL_MOUSEBUTTONDOWN && event->button.button == SDL_BUTTON_LEFT && GHP_clickIn(event->button.x, event->button.y, pos)) {
+        if ( strcmp(".txt", tex->texts[0].text + strlen(tex->texts[0].text) - 4 ) == 0 ) {
+            //game->logFile = fopen(tex->texts[0].text, "rt");
+            game->logFile = fopen("2025-06-09-18-03-48-gamelog.txt", "rt");
+            *mode = MODE_REPLAY;
+        }
+
+        // TODO: ADD FILES THAT USER CAN CONTINUE PLAYING
+    }
+}
+
+void renderSearchFile(SDL_Renderer* renderer, GameState* game, GHP_TexturesData* tex, int* mode) {
+    GHP_setBGColor(renderer, 0, 0, 255, 255);
+    GHP_renderTexture(renderer, tex->texts->tex, 52, 253);
+    GHP_renderButton(renderer, &tex->buttons[BUT_SEARCHDIR], (WIDTH-(961-597))/2 , HEIGHT*0.1);
+
+    // white rectangle border
+    SDL_Rect rect = {50, 250, WIDTH-50*2, 50};
+    SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
+    SDL_RenderDrawRect(renderer, &rect);
+}
+
 // Replay
 
-void initReplay(SDL_Renderer* renderer, GameState* game, GHP_TexturesData* tex, ConfigData* configData, int* mode) {}
+void initReplay(SDL_Renderer* renderer, GameState* game, GHP_TexturesData* tex, ConfigData* configData, int* mode) {
+    GHP_setBGColor(renderer, 0, 0, 0, 255);
+    SDL_RenderClear(renderer);
+    GHP_renderMesh(renderer, &(tex->active_mesh), false);
+    GHP_renderButton(renderer, &tex->buttons[BUT_REPLAYACTION], 1000, (HEIGHT-(763-640))/2);
+
+    fscanf(game->logFile, "DIMENSION:%dx%d\n", &game->rows, &game->columns);
+    fscanf(game->logFile, "SEED:%d\n", &game->seed);
+    fscanf(game->logFile, "MINES:%d\n", &game->bombsNum);
+    emptyField(game->rows, game->columns, game->field);
+    coverAll(game->rows, game->columns, game->field);
+}
+
+void handlerReplay(SDL_Renderer* renderer, GameState* game, GHP_TexturesData* tex, SDL_Event* event, int* mode) {
+
+    // TODO: Add to see the name
+
+    char eventLog[21]; //TODO Hard coded
+    char type;
+    int i, j;
+    int year, mon, day, hour, min, sec;
+    //char format[] = "Event:Click/Type:%c/PosMesh:(%d,%d)/Date:(%d-%d-%d-%d-%d-%d)"; // remove Click put generic
 
 
-void handlerWin(SDL_Renderer* renderer, GameState* game, GHP_TexturesData* tex, SDL_Event* event, int* mode) {}
+    // TODO check if problems loading
+
+    //randomBombs(game->rows, game->columns, game->field, game->bombsNum, game->seed, ) // later
+
+    int posB[2][2] = { // TODO: Replace this kind of things with GHP_clickInButton
+        {tex->buttons[BUT_REPLAYACTION].curWindowX, tex->buttons[BUT_REPLAYACTION].curWindowY},
+        { tex->buttons[BUT_REPLAYACTION].tex->width + tex->buttons[BUT_REPLAYACTION].curWindowX,
+          tex->buttons[BUT_REPLAYACTION].tex->height + tex->buttons[BUT_REPLAYACTION].curWindowY, }
+    };
+
+    if (event->type == SDL_MOUSEBUTTONDOWN && event->button.button == SDL_BUTTON_LEFT && GHP_clickIn(event->button.x, event->button.y, posB)) {
+
+
+        char txt[350];
+        while (fscanf(game->logFile, "\n%s", &txt))
+            printf("%s", txt);
+
+
+        if (fscanf(game->logFile, "Event:Click/Type:%c/PosMesh:(%d,%d)/Date:(%d-%d-%d-%d-%d-%d)", &type, &i, &j, &year, &mon, &day, &hour, &min, &sec) >= 1) {
+
+            if (strcmp(eventLog, "Click") == 0) {
+
+                int pos[2] = {i, j};
+
+                if (game->started) {
+
+                    if (type == 'L') {
+                        if (userRevealCeld(i, j, game) == CELD_BOMB) {
+                            game->started = false;
+                            fclose(game->logFile);
+                        }
+                        if (game->started && checkWin(game->rows, game->columns, game->field)) // TODO: Show it in window
+                            *mode = MODE_SEARCHDIR;
+                    } else if (type == 'R') {
+                        userAuxActionCeld(i, j, game);
+                    }
+
+                } else {
+                    initField(game, pos);
+                    userRevealCeld(i, j, game);
+                    game->started = true;
+                    *mode = MODE_SEARCHDIR;
+                }
+
+            }
+
+        } else { // no more logs -> game ended
+            *mode = MODE_SEARCHDIR;
+        }
+
+    }
+
+}
+
+void renderReplay(SDL_Renderer* renderer, GameState* game, GHP_TexturesData* tex, int* mode) {
+    renderMeshUpdated(renderer, game, tex, tex->active_mesh);
+}
 
 
 
-// Buttons
-
-// typedef void (*ButtonReaction)(void* gameData, int* mode);
+// Buttons Reactions
 void setModePlay(void* gameData, int* mode) {SDL_StartTextInput(); *mode = MODE_PLAY;}
 void setModeMenu(void* gameData, int* mode) {*mode = MODE_MENU;}
 void setModeLost(void* gameData, int* mode) {*mode = MODE_LOST;}
 void setModeNameplayer(void* gameData, int* mode) { *mode = MODE_NAMEPLAYER; }
-
-
+void setModeSearchDir(void* gameData, int*mode) {*mode = MODE_SEARCHDIR; }
 
 
 

@@ -1,0 +1,9 @@
+DATE:2025-5-9-18-3-48
+DIMENSION:8x8
+MINES:9
+SEED:1749503028
+Event:Click/Type:L/PosMesh:(4,3)/Date:(2025-6-9-18-3-48)
+Event:Click/Type:L/PosMesh:(02,02)/Date:(2025-06-09-18-03-48)
+Event:Click/Type:L/PosMesh:(01,00)/Date:(2025-06-09-18-03-50)
+Event:Click/Type:L/PosMesh:(00,02)/Date:(2025-06-09-18-03-50)
+Event:Lost

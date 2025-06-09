@@ -50,3 +50,12 @@ graphics -> none
 minesweeper -> gamestate
 configs -> gamestate
 main -> all
+
+TO ASK
+- files .h
+- link directories (build options)
+- replay
+
+TODO:
+not hard code text textures '[0]'
+clickInButton
