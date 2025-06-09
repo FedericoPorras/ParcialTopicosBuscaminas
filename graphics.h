@@ -41,8 +41,8 @@ typedef struct {
 
 typedef struct {
     GHP_Texture* tex;
-    int windowX;
-    int windowY;
+    int curWindowX;
+    int curWindowY;
     void (*on_click)(void* gameData, int* mode);
 } GHP_Button;
 
@@ -87,8 +87,8 @@ void GHP_coordsToPos(GHP_Mesh* mesh, int x, int y, int* pos);
 void GHP_posToCoords(GHP_Mesh* mesh, int x, int y, int* pos);
 bool GHP_clickInMesh(int x, int y, GHP_Mesh* mesh);
 int GHP_loadRectAsset(SDL_Renderer* renderer, const char* path, GHP_Texture** texturesAsset, int ammount_textures, int width_item, int height_item, int colsAsset);
-void GHP_newButtonAbs(SDL_Renderer* renderer, char* path, GHP_TexturesData* texData, GHP_Button* button, int initX, int initY, int endX, int endY, int windowX, int windowY, ButtonReaction func);
-void GHP_renderButton(SDL_Renderer* renderer, GHP_Button* button);
+void GHP_newButtonAbs(SDL_Renderer* renderer, char* path, GHP_TexturesData* texData, GHP_Button* button, int initX, int initY, int endX, int endY, ButtonReaction func);
+void GHP_renderButton(SDL_Renderer* renderer, GHP_Button* button, int windowX, int windowY);
 GHP_Texture GHP_textTexture(SDL_Renderer* renderer, char* pathFont, int sizeFont, SDL_Color color, char* text);
 void GHP_newText(SDL_Renderer* renderer, char* path, GHP_TexturesData* texData, GHP_Text* text, int windowX, int windowY, int sizeFont, SDL_Color color);
 void GHP_updateTextTexture(SDL_Renderer* renderer, GHP_TexturesData* texData, int numberText, int sizeFont, SDL_Color color);

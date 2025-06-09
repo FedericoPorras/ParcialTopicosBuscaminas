@@ -8,6 +8,8 @@ void nullGame(GameState* game) {
     game->columns = -1;
     game->seed = -1;
     game->started = false;
+    game->lost[0] = -1;
+    game->lost[1] = -1;
     // TODO game->lost;
 }
 

@@ -53,13 +53,13 @@ void GHP_DestroyWindow(struct GHP_WindowData* windowData) {
 
 void GHP_DestroyTexturesData(GHP_TexturesData* data) {
     for (int i=0; i<data->texts_loaded; i++)
-        free(data->textsTexs->tex);
+        GHP_destroyTexture(data->textsTexs + i);
     free(data->textsTexs);
     for (int i=0; i<data->buttons_loaded; i++)
-        free(data->buttons->tex);
+        GHP_destroyTexture(data->buttons->tex + i);
     free(data->buttonsTexs);
     for (int i=0; i<data->textures_loaded; i++)
-        free(data->textures->tex);
+        GHP_destroyTexture(data->textures + i);
     free(data->textures);
 
 }
@@ -167,22 +167,22 @@ int GHP_loadRectAsset(SDL_Renderer* renderer, const char* path, GHP_Texture** te
     return OK;
 }
 
-void GHP_newButtonAbs(SDL_Renderer* renderer, char* path, GHP_TexturesData* texData, GHP_Button* button, int initX, int initY, int endX, int endY, int windowX, int windowY, ButtonReaction func) { // TODO: Consider taking it to graphics
+void GHP_newButtonAbs(SDL_Renderer* renderer, char* path, GHP_TexturesData* texData, GHP_Button* button, int initX, int initY, int endX, int endY, ButtonReaction func) { // TODO: Consider taking it to graphics
     texData->buttonsTexs[texData->buttons_loaded] = GHP_newTextureAbs(renderer, path, initX, initY, endX, endY);
     button->tex = &(texData->buttonsTexs[texData->buttons_loaded]);
-    texData->buttons_loaded++;
 
     if (!button->tex) {
         printf("\nError loading a button texture.");
         button->tex = NULL;
     }
-    button->windowX = windowX;
-    button->windowY = windowY;
     button->on_click = func;
+
+    texData->buttons_loaded++;
 }
 
-void GHP_renderButton(SDL_Renderer* renderer, GHP_Button* button) {
-    GHP_renderTexture(renderer, button->tex, button->windowX, button->windowY);
+void GHP_renderButton(SDL_Renderer* renderer, GHP_Button* button, int windowX, int windowY) {
+    button->curWindowX = windowX; button->curWindowY = windowY;
+    GHP_renderTexture(renderer, button->tex, windowX, windowY);
 }
 
 GHP_Texture GHP_textTexture(SDL_Renderer* renderer, char* pathFont, int sizeFont, SDL_Color color, char* text) {
@@ -220,7 +220,7 @@ GHP_Texture GHP_textTexture(SDL_Renderer* renderer, char* pathFont, int sizeFont
 void GHP_newText(SDL_Renderer* renderer, char* path, GHP_TexturesData* texData, GHP_Text* text, int windowX, int windowY, int sizeFont, SDL_Color color) {
     texData->textsTexs[texData->texts_loaded] = GHP_textTexture(renderer, path, sizeFont, color, text->text);
     text->tex = &(texData->textsTexs[texData->texts_loaded]);
-    texData->buttons_loaded++;
+    texData->texts_loaded++;
 
     if(!text->tex) {
         printf("\nError loading a text texture.");

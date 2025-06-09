@@ -17,6 +17,7 @@
 #define HEIGHT 768
 #define WIDTH_SPACE_MESH_MINES 768
 
+#define MODE_WIN 4
 #define MODE_NAMEPLAYER 3
 #define MODE_LOST 2
 #define MODE_PLAY 1
@@ -31,15 +32,17 @@
 #define TEX_FLAG 10
 #define TEX_BOMB 11
 #define TEX_BOMBBOOM 12
+#define AMMOUNT_TEXTURES 14
+#define AMM_TEXT_COL_ASSET 7
+#define AMMOUNT_ASSETS 7
 
 #define BUT_START 0
 #define BUT_PLAYAGAIN 1
 #define BUT_NAMEPLAYER 2
+#define BUT_MENU 3
+#define BUT_SAVENAME 4
+#define AMMOUNT_BUTTONS 5
 
-#define AMMOUNT_TEXTURES 14
-#define AMM_TEXT_COL_ASSET 7
-#define AMMOUNT_ASSETS 7
-#define AMMOUNT_BUTTONS 3
 #define AMMOUNT_TEXTS 1
 
 #define CELD_EMPTY 0
@@ -88,6 +91,10 @@ void handlerLost(SDL_Renderer* renderer, GameState* game, GHP_TexturesData* tex,
 void initNameplayer(SDL_Renderer* renderer, GameState* game, GHP_TexturesData* tex, ConfigData* configData, int* mode);
 void handlerNameplayer(SDL_Renderer* renderer, GameState* game, GHP_TexturesData* tex, SDL_Event* event, int* mode);
 void renderNameplayer(SDL_Renderer* renderer, GameState* game, GHP_TexturesData* tex, int* mode);
+void initWin(SDL_Renderer* renderer, GameState* game, GHP_TexturesData* tex, ConfigData* configData, int* mode);
+void handlerWin(SDL_Renderer* renderer, GameState* game, GHP_TexturesData* tex, SDL_Event* event, int* mode);
+void initReplay(SDL_Renderer* renderer, GameState* game, GHP_TexturesData* tex, ConfigData* configData, int* mode);
+void handlerWin(SDL_Renderer* renderer, GameState* game, GHP_TexturesData* tex, SDL_Event* event, int* mode);
 
 // for buttons
 void setModePlay(void* gameData, int* mode);
