@@ -92,6 +92,8 @@ void GHP_renderButton(SDL_Renderer* renderer, GHP_Button* button, int windowX, i
 GHP_Texture GHP_textTexture(SDL_Renderer* renderer, char* pathFont, int sizeFont, SDL_Color color, char* text);
 void GHP_newText(SDL_Renderer* renderer, char* path, GHP_TexturesData* texData, GHP_Text* text, int windowX, int windowY, int sizeFont, SDL_Color color);
 void GHP_updateTextTexture(SDL_Renderer* renderer, GHP_TexturesData* texData, int numberText, int sizeFont, SDL_Color color);
+bool GHP_clickInButton (int x, int y, GHP_Button* button);
+bool GHP_enterPressed(SDL_Event* event);
 
 #endif // GRAPHICS_H_INCLUDED
 

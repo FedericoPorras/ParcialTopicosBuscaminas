@@ -135,7 +135,11 @@ void coverAll(int rows, int cols, mineCeld** field) {
 bool checkWin(int rows, int cols, mineCeld** field) {
     for (int i=0; i<rows; i++) {
         for (int j=0; j<cols; j++) {
-            if (!field[i][j].revealed && !(field[i][j].flag && field[i][j].bomb)) return false; // TODO: CHANGE, loose will be analized in other function
+            if (
+                !field[i][j].revealed &&
+                (!field[i][j].bomb || (field[i][j].bomb && !field[i][j].flag))
+            )
+                return false; // TODO: CHANGE, loose will be analized in other function
         }
     }
     return true;
@@ -155,4 +159,39 @@ void printFieldConsole(int rows, int cols, mineCeld** field) {
         printf("\n");
     }
 }
+
+void initField(GameState* game, int pos[2]) {
+    emptyField(game->rows, game->columns, game->field);
+    game->seed = randomBombs(game->rows, game->columns, game->field, game->bombsNum, game->seed, pos);
+    calcAdjacency(game->rows, game->columns, game->field);
+    game->started = true;
+}
+
+int userRevealCeld(int i, int j, GameState* game) {
+    if (!game->field[i][j].bomb) {
+        game->field[i][j].revealed = true;
+        revealAdjacencies(i, j, game->rows, game->columns, game->field);
+        return CELD_EMPTY;
+    } else if (!game->field[i][j].flag) {
+        revealAll(game->rows, game->columns, game->field);
+        game->lost[0] = i; game->lost[1] = j;
+        return CELD_BOMB;
+    } else return CELD_FLAGGED;
+}
+
+void userAuxActionCeld(int i, int j, GameState* game) {
+    if (game->field[i][j].flag) game->field[i][j].flag = false;
+    else game->field[i][j].flag = true;
+}
+
+void logFileWriteClick(char button, int* posInMesh, FILE* file) {
+    char date[20];
+    time_t t = time(NULL);
+    struct tm* now = localtime(&t);
+    sprintf(date, "%04d-%02d-%02d-%02d-%02d-%02d", now->tm_year+1900, now->tm_mon+1, now->tm_mday, now->tm_hour, now->tm_min, now->tm_sec); // TODO: Release warning
+
+    fprintf(file, "\nEvent:Click/Type:%c/PosMesh:(%02d,%02d)/Date:(%s)", button, *posInMesh, *(posInMesh+1), date);
+}
+
+
 

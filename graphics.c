@@ -111,6 +111,14 @@ bool GHP_clickIn(int x, int y, int pos[2][2]) {
     return (pos[0][0] <= x && x <= pos[1][0]) && (pos[0][1] <= y && y <= pos [1][1]);
 }
 
+bool GHP_clickInButton (int x, int y, GHP_Button* button) {
+    int pos[2][2]= {
+        {button->curWindowX, button->curWindowY},
+        {button->curWindowX + button->tex->width, button->curWindowY + button->tex->height}
+    };
+    return GHP_clickIn(x, y, pos);
+}
+
 void GHP_meshPos(GHP_Mesh* mesh, int pos[2][2]) {
     pos[0][0] = mesh->offsetX;
     pos[0][1] = mesh->offsetY;
@@ -239,6 +247,10 @@ void GHP_newText(SDL_Renderer* renderer, char* path, GHP_TexturesData* texData, 
 
 void GHP_updateTextTexture(SDL_Renderer* renderer, GHP_TexturesData* texData, int numberText, int sizeFont, SDL_Color color) {
     texData->textsTexs[numberText] = GHP_textTexture(renderer, texData->texts[numberText].path, sizeFont, color, texData->texts[numberText].text);
+}
+
+bool GHP_enterPressed(SDL_Event* event) {
+    return (event->type == SDL_KEYDOWN && event->key.keysym.sym == SDLK_RETURN);
 }
 
 

@@ -4,6 +4,7 @@
 #include <stdbool.h>
 #include <stdio.h>
 #include <time.h>
+#include "dinMtx.h"
 
 typedef struct {
     bool bomb;
@@ -22,9 +23,14 @@ typedef struct {
     int lost[2];
     mineCeld** field;
     FILE* logFile;
+    FILE* binFile;
 } GameState;
 
 void nullGame(GameState* game);
 void printGame(GameState* game);
+void saveGame(GameState* game, FILE* file);
+void loadGame(GameState* game, FILE* file);
+
 
 #endif // GAMESTATE_H_INCLUDED
+

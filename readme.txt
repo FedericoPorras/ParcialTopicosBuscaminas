@@ -27,14 +27,11 @@ So, the menu will be in the coords
 
 MAIN TODOS:
 AUTOFLAG
-USER ENTRY (REQ)
 SHOW MINES REST (REQ)
-SAVE GAMESTATE TO PLAY LATER (REQ)
 FILE SAVE STATS LAST 10 GAMES (REQ)
 CHEAT (REQ)
 
 TIME REC, SHOW AND SAVE
-VIEW GAMES (REPLAY)
 AUTOREVEAL BOMB END GAME
 CHANGE DIM IN SDL (how?)
 SOME OPTIONS FROM SDL SELECTIONS
@@ -57,5 +54,5 @@ TO ASK
 - replay
 
 TODO:
-not hard code text textures '[0]'
-clickInButton
+if and endif for librarys, and separate main
+when the user deletes all the path/text, it prints a surface error
