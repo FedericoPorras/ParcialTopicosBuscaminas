@@ -13,6 +13,7 @@
 #define CELD_BOMB 1
 #define CELD_FLAGGED 2
 
+
 void emptyField(int rows, int cols, mineCeld** field);
 int randomBombs(int rows, int cols, mineCeld** field, int ammount, int seed, int pos[2]);
 void printFieldConsole(int rows, int cols, mineCeld** field);

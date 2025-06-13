@@ -2,34 +2,135 @@
 <CodeBlocks_layout_file>
 	<FileVersion major="1" minor="0" />
 	<ActiveTarget name="Debug" />
-	<File name="main.c" open="1" top="1" tabpos="1" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+	<File name="gamestate.h" open="1" top="0" tabpos="8" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
 		<Cursor>
-			<Cursor1 position="25610" topLine="300" />
+			<Cursor1 position="643" topLine="0" />
 		</Cursor>
 		<Folding>
 			<Collapse line="8" />
-			<Collapse line="115" />
-			<Collapse line="128" />
-			<Collapse line="135" />
-			<Collapse line="194" />
-			<Collapse line="212" />
-			<Collapse line="225" />
-			<Collapse line="244" />
-			<Collapse line="304" />
-			<Collapse line="355" />
-			<Collapse line="404" />
-			<Collapse line="455" />
-			<Collapse line="485" />
-			<Collapse line="498" />
-			<Collapse line="504" />
-			<Collapse line="521" />
-			<Collapse line="564" />
-			<Collapse line="655" />
+			<Collapse line="16" />
 		</Folding>
 	</File>
-	<File name="minesweeper.c" open="0" top="0" tabpos="6" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+	<File name="graphics.c" open="1" top="0" tabpos="5" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
 		<Cursor>
-			<Cursor1 position="405" topLine="0" />
+			<Cursor1 position="9705" topLine="42" />
+		</Cursor>
+		<Folding>
+			<Collapse line="5" />
+			<Collapse line="9" />
+			<Collapse line="16" />
+			<Collapse line="23" />
+			<Collapse line="29" />
+			<Collapse line="47" />
+			<Collapse line="91" />
+			<Collapse line="95" />
+			<Collapse line="104" />
+			<Collapse line="109" />
+			<Collapse line="113" />
+			<Collapse line="121" />
+			<Collapse line="128" />
+			<Collapse line="133" />
+			<Collapse line="140" />
+			<Collapse line="145" />
+			<Collapse line="150" />
+			<Collapse line="177" />
+			<Collapse line="190" />
+			<Collapse line="195" />
+			<Collapse line="227" />
+			<Collapse line="247" />
+			<Collapse line="251" />
+		</Folding>
+	</File>
+	<File name="configs.c" open="0" top="0" tabpos="3" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="781" topLine="0" />
+		</Cursor>
+		<Folding>
+			<Collapse line="2" />
+			<Collapse line="38" />
+			<Collapse line="50" />
+			<Collapse line="63" />
+			<Collapse line="69" />
+		</Folding>
+	</File>
+	<File name="menus.c" open="1" top="1" tabpos="3" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="16393" topLine="118" />
+		</Cursor>
+		<Folding>
+			<Collapse line="32" />
+			<Collapse line="58" />
+			<Collapse line="107" />
+			<Collapse line="160" />
+			<Collapse line="187" />
+			<Collapse line="194" />
+			<Collapse line="247" />
+			<Collapse line="260" />
+			<Collapse line="266" />
+			<Collapse line="283" />
+			<Collapse line="372" />
+			<Collapse line="395" />
+			<Collapse line="408" />
+			<Collapse line="455" />
+		</Folding>
+	</File>
+	<File name="main.c" open="1" top="0" tabpos="1" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="3420" topLine="0" />
+		</Cursor>
+		<Folding>
+			<Collapse line="8" />
+			<Collapse line="28" />
+			<Collapse line="111" />
+			<Collapse line="126" />
+			<Collapse line="185" />
+			<Collapse line="204" />
+		</Folding>
+	</File>
+	<File name="configs.h" open="0" top="0" tabpos="6" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="99" topLine="0" />
+		</Cursor>
+	</File>
+	<File name="gamestate.c" open="1" top="0" tabpos="9" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="464" topLine="0" />
+		</Cursor>
+		<Folding>
+			<Collapse line="2" />
+			<Collapse line="15" />
+			<Collapse line="19" />
+			<Collapse line="33" />
+		</Folding>
+	</File>
+	<File name="dinMtx.c" open="1" top="0" tabpos="10" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="72" topLine="0" />
+		</Cursor>
+	</File>
+	<File name="dinMtx.h" open="1" top="0" tabpos="11" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="75" topLine="0" />
+		</Cursor>
+	</File>
+	<File name="menus.h" open="1" top="0" tabpos="4" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="24" topLine="0" />
+		</Cursor>
+	</File>
+	<File name="minesweeper.h" open="0" top="0" tabpos="6" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="1109" topLine="0" />
+		</Cursor>
+	</File>
+	<File name="graphics.h" open="1" top="0" tabpos="6" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="3668" topLine="57" />
+		</Cursor>
+	</File>
+	<File name="minesweeper.c" open="1" top="0" tabpos="7" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
+		<Cursor>
+			<Cursor1 position="5451" topLine="5" />
 		</Cursor>
 		<Folding>
 			<Collapse line="4" />
@@ -39,81 +140,17 @@
 			<Collapse line="83" />
 			<Collapse line="99" />
 			<Collapse line="117" />
-			<Collapse line="125" />
 			<Collapse line="134" />
-			<Collapse line="135" />
-			<Collapse line="143" />
+			<Collapse line="147" />
+			<Collapse line="162" />
+			<Collapse line="169" />
+			<Collapse line="181" />
+			<Collapse line="186" />
 		</Folding>
-	</File>
-	<File name="graphics.c" open="0" top="0" tabpos="3" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="6884" topLine="28" />
-		</Cursor>
-		<Folding>
-			<Collapse line="5" />
-			<Collapse line="9" />
-			<Collapse line="16" />
-			<Collapse line="23" />
-			<Collapse line="29" />
-			<Collapse line="47" />
-			<Collapse line="53" />
-			<Collapse line="66" />
-			<Collapse line="78" />
-			<Collapse line="82" />
-			<Collapse line="91" />
-			<Collapse line="95" />
-			<Collapse line="104" />
-			<Collapse line="109" />
-			<Collapse line="113" />
-			<Collapse line="120" />
-			<Collapse line="125" />
-			<Collapse line="132" />
-			<Collapse line="137" />
-			<Collapse line="142" />
-		</Folding>
-	</File>
-	<File name="graphics.h" open="0" top="0" tabpos="4" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="2909" topLine="60" />
-		</Cursor>
-	</File>
-	<File name="minesweeper.h" open="0" top="0" tabpos="6" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="172" topLine="0" />
-		</Cursor>
-	</File>
-	<File name="configs.c" open="1" top="0" tabpos="3" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="781" topLine="0" />
-		</Cursor>
-		<Folding>
-			<Collapse line="38" />
-			<Collapse line="50" />
-			<Collapse line="63" />
-			<Collapse line="69" />
-		</Folding>
-	</File>
-	<File name="configs.h" open="0" top="0" tabpos="6" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="99" topLine="0" />
-		</Cursor>
 	</File>
 	<File name="main.h" open="1" top="0" tabpos="2" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
 		<Cursor>
-			<Cursor1 position="4346" topLine="74" />
-		</Cursor>
-		<Folding>
-			<Collapse line="62" />
-		</Folding>
-	</File>
-	<File name="gamestate.h" open="0" top="0" tabpos="8" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="413" topLine="0" />
-		</Cursor>
-	</File>
-	<File name="gamestate.c" open="0" top="0" tabpos="7" split="0" active="1" splitpos="0" zoom_1="0" zoom_2="0">
-		<Cursor>
-			<Cursor1 position="283" topLine="0" />
+			<Cursor1 position="290" topLine="0" />
 		</Cursor>
 	</File>
 </CodeBlocks_layout_file>

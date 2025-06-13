@@ -53,6 +53,10 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="configs.h" />
+		<Unit filename="dinMtx.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="dinMtx.h" />
 		<Unit filename="gamestate.c">
 			<Option compilerVar="CC" />
 		</Unit>
@@ -65,6 +69,10 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="main.h" />
+		<Unit filename="menus.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="menus.h" />
 		<Unit filename="minesweeper.c">
 			<Option compilerVar="CC" />
 		</Unit>

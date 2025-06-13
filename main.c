@@ -1,10 +1,10 @@
 #include "main.h"
 #include <windows.h> // TODO DELETE
 
-// TODO: void autoFlag / When you click and the only option is to be a flag in a celd to fill it with the flag
-// this could be an extra functionality
 // also a REQUIRED functionality is that if the user clicks a revealed num, it must free adjacencies due to
 // having the enough flags for its own adjacency, and if the flags were wrong, lose the game
+
+
 
 int main (int argc, char *argv[]) {
 
@@ -105,6 +105,7 @@ void react(SDL_Renderer* renderer, void* gameData, GHP_TexturesData* TexData) {
     }
 
     fclose(game.logFile); // ASK For save any unexpected error
+    fclose(game.binFile);
     destroyDinMtx(game.rows, game.columns, sizeof(mineCeld), (void**)game.field);
 }
 

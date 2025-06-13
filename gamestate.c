@@ -2,7 +2,7 @@
 
 void nullGame(GameState* game) {
     game->bombsNum = -1;
-    game->field = NULL;
+    game->binFile = NULL;
     game->logFile = NULL;
     game->rows = -1;
     game->columns = -1;
@@ -10,7 +10,6 @@ void nullGame(GameState* game) {
     game->started = false;
     game->lost[0] = -1;
     game->lost[1] = -1;
-    // TODO game->lost;
 }
 
 void printGame(GameState* game) {

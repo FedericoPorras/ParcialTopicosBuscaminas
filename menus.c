@@ -58,23 +58,24 @@ void updateShowLogTexts(SDL_Renderer* renderer, GHP_TexturesData* tex, char type
 
 void initPlay(SDL_Renderer* renderer, GameState* game, GHP_TexturesData* tex, ConfigData* configData, int* mode) {
 
-    // start the game
-
     if (!game->binFile) {
 
         applyConfig(configData, game);
         game->started = false;
         coverAll(game->rows, game->columns, game->field);
 
-        char fileName[32];
+        char fileName[38];
         char initTimeLog[32];
         time_t t = time(NULL); // current time
         struct tm* now = localtime(&t); // tm format
-        strftime(fileName, sizeof(fileName), "%Y-%m-%d-%H-%M-%S-gamelog.txt", now);
+        strftime(fileName, sizeof(fileName), "games/%Y-%m-%d-%H-%M-%S-gamelog.txt", now);
         sprintf(initTimeLog, "DATE:%d-%d-%d-%d-%d-%d", now->tm_year+1900, now->tm_mon+1, now->tm_mday, now->tm_hour, now->tm_min, now->tm_sec); // no \n because is the first log
-        game->logFile = fopen(fileName, "wt");
 
-        strcpy(fileName+31-3, "dat");
+        if (!folderExists("games"))
+            createFolder("games");
+
+        game->logFile = fopen(fileName, "wt");
+        strcpy(fileName+37-7, "dat.dat");
         game->binFile = fopen(fileName, "wb");
 
         if (!game->binFile) {
@@ -96,6 +97,7 @@ void initPlay(SDL_Renderer* renderer, GameState* game, GHP_TexturesData* tex, Co
 
     }
 
+    // TODO
     // log() -> time(START, END, GAME_TIME) pos(X,Y) action(PRESSED/FLAGGED/UNFLAGGED)
     // log_seed() -> SEED XXXXX
 
@@ -103,9 +105,13 @@ void initPlay(SDL_Renderer* renderer, GameState* game, GHP_TexturesData* tex, Co
     SDL_RenderClear(renderer);
     GHP_renderMesh(renderer, &(tex->active_mesh), false);
     GHP_renderButton(renderer, &tex->buttons[BUT_SAVEGAME], WIDTH_SPACE_MESH_MINES + 50, HEIGHT*0.6);
+    GHP_renderButton(renderer, &tex->buttons[BUT_MENU], WIDTH_SPACE_MESH_MINES + 50, HEIGHT*0.2);
 }
 
 void handlerPlay(SDL_Renderer* renderer, GameState* game, GHP_TexturesData* tex, SDL_Event* event, int* mode) {
+
+    GHP_Button buttons[] = {tex->buttons[BUT_MENU]};
+    handleButtonsClick(buttons, 1, event->button.x, event->button.y, game, mode, event);
 
     if (event->type == SDL_MOUSEBUTTONDOWN) {
 
@@ -156,6 +162,8 @@ void handlerPlay(SDL_Renderer* renderer, GameState* game, GHP_TexturesData* tex,
         }
 
     }
+
+
 }
 
 void renderPlay(SDL_Renderer* renderer, GameState* game, GHP_TexturesData* tex, int* mode) {
@@ -186,7 +194,7 @@ void handlerMenu(SDL_Renderer* renderer, GameState* game, GHP_TexturesData* tex,
 // Lost
 
 void initLost(SDL_Renderer* renderer, GameState* game, GHP_TexturesData* tex, ConfigData* configData, int* mode) {
-    GHP_renderButton(renderer, &tex->buttons[BUT_PLAYAGAIN], 1000, (HEIGHT-(308-34))/2);
+    GHP_renderButton(renderer, &tex->buttons[BUT_PLAYAGAIN], 870, HEIGHT*0.15);
     revealAll(game->rows, game->columns, game->field);
     renderMeshUpdated(renderer, game, tex, tex->active_mesh);
     SDL_RenderPresent(renderer);
@@ -276,6 +284,7 @@ void handlerWin(SDL_Renderer* renderer, GameState* game, GHP_TexturesData* tex, 
     if (event->type == SDL_MOUSEBUTTONDOWN && event->button.button == SDL_BUTTON_LEFT && GHP_clickIn(event->button.x, event->button.y, pos)) {
         fprintf(game->logFile, "\nEvent:Win/Type:-\n"); // ASK fprintf when unnecessary vs fwrite
         fclose(game->logFile); game->logFile = NULL;
+        nullGame(game);
     }
 }
 
@@ -288,6 +297,7 @@ void initSearchFile(SDL_Renderer* renderer, GameState* game, GHP_TexturesData* t
     GHP_updateTextTexture(renderer, tex, 0, 40, myColor);
     GHP_setBGColor(renderer, 0, 0, 255, 255);
     GHP_renderButton(renderer, &tex->buttons[BUT_SEARCHDIR], (WIDTH-(961-597))/2 , HEIGHT*0.1);
+    GHP_renderButton(renderer, &tex->buttons[BUT_MENU], WIDTH*0.3, HEIGHT*0.7);
 
     // white rectangle border
     SDL_Rect rect = {50, 250, WIDTH-50*2, 50};
@@ -296,6 +306,9 @@ void initSearchFile(SDL_Renderer* renderer, GameState* game, GHP_TexturesData* t
 }
 
 void handlerSearchFile(SDL_Renderer* renderer, GameState* game, GHP_TexturesData* tex, SDL_Event* event, int* mode) {
+
+    GHP_Button buttons[] = {tex->buttons[BUT_MENU]};
+    handleButtonsClick(buttons, 1, event->button.x, event->button.y, game, mode, event);
 
     if (event->type == SDL_TEXTINPUT) {
         if (strlen(tex->texts[TEXT_SEARCHFILESENTRY].text)+1 < GHP_TEXT_LIMIT) {
@@ -324,29 +337,21 @@ void handlerSearchFile(SDL_Renderer* renderer, GameState* game, GHP_TexturesData
         GHP_enterPressed(event)
     ) {
 
-        //TODO: FOR TESTING, REMOVE
-        //strcpy(tex->texts[TEXT_SEARCHFILESENTRY].text,"2025-06-12-13-37-03-gamelog.txt");
+        char fileName[GHP_TEXT_LIMIT+4] = "games/";
+        strcat(fileName,tex->texts[TEXT_SEARCHFILESENTRY].text);
 
-
-        if (strcmp("debug", tex->texts[TEXT_SEARCHFILESENTRY].text) == 0) {
-            strcpy(tex->texts[TEXT_SEARCHFILESENTRY].text,"2025-06-12-12-32-13-gamelog.txt"); // TODO: Only for debugging
-            game->logFile = fopen(tex->texts[TEXT_SEARCHFILESENTRY].text, "rt");
-            *mode = MODE_REPLAY;
-            return;
-        }
-
-        if ( strcmp(".txt", tex->texts[TEXT_SEARCHFILESENTRY].text + strlen(tex->texts[TEXT_SEARCHFILESENTRY].text) - 4 ) == 0 ) {
-            game->logFile = fopen(tex->texts[TEXT_SEARCHFILESENTRY].text, "rt");
+        if ( strcmp(".txt", fileName + strlen(fileName) - 4 ) == 0 ) {
+            game->logFile = fopen(fileName, "rt");
             if (!game->logFile)
-                printf("\nFile %s not found.", tex->texts[TEXT_SEARCHFILESENTRY].text); // TODO: Show it to user
+                printf("\nFile %s not found.", fileName); // TODO: Show it to user
             else
                 *mode = MODE_REPLAY;
         }
 
-        if ( strcmp(".dat", tex->texts[TEXT_SEARCHFILESENTRY].text + strlen(tex->texts[TEXT_SEARCHFILESENTRY].text) - 4 ) == 0 ) {
-            game->binFile = fopen(tex->texts[TEXT_SEARCHFILESENTRY].text, "r+b");
+        if ( strcmp(".dat", fileName + strlen(fileName) - 4 ) == 0 ) {
+            game->binFile = fopen(fileName, "r+b");
             if (!game->binFile)
-                printf("\nFile %s not found.", tex->texts[TEXT_SEARCHFILESENTRY].text); // TODO: Show it to user
+                printf("\nFile %s not found.", fileName); // TODO: Show it to user
             else
                 *mode = MODE_PLAY;
         }
@@ -361,6 +366,7 @@ void renderSearchFile(SDL_Renderer* renderer, GameState* game, GHP_TexturesData*
     GHP_setBGColor(renderer, 0, 0, 255, 255);
     GHP_renderTexture(renderer, tex->texts[TEXT_SEARCHFILESENTRY].tex, 52, 253);
     GHP_renderButton(renderer, &tex->buttons[BUT_SEARCHDIR], (WIDTH-(961-597))/2 , HEIGHT*0.1);
+    GHP_renderButton(renderer, &tex->buttons[BUT_MENU], WIDTH*0.3, HEIGHT*0.7);
 
     // white rectangle border
     SDL_Rect rect = {50, 250, WIDTH-50*2, 50};
