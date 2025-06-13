@@ -77,6 +77,7 @@ void react(SDL_Renderer* renderer, void* gameData, GHP_TexturesData* TexData) {
                 if (game.started) {
                     char msgCloseGame[] = "\nEvent:PrematureGameEnd";
                     fwrite(msgCloseGame, sizeof(char), strlen(msgCloseGame), game.logFile);
+                    saveGame(&game, game.binFile);
                 }
             }
 
@@ -105,7 +106,7 @@ void react(SDL_Renderer* renderer, void* gameData, GHP_TexturesData* TexData) {
     }
 
     fclose(game.logFile); // ASK For save any unexpected error
-    fclose(game.binFile);
+    fclose(game.binFile); // TODO: This shit should be here? remember that saveGame() already close the bin file
     destroyDinMtx(game.rows, game.columns, sizeof(mineCeld), (void**)game.field);
 }
 

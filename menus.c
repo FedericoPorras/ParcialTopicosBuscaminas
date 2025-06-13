@@ -156,11 +156,17 @@ void handlerPlay(SDL_Renderer* renderer, GameState* game, GHP_TexturesData* tex,
         if (GHP_clickInButton(event->button.x, event->button.y, &tex->buttons[BUT_SAVEGAME])) {
             saveGame(game, game->binFile);
             if (game->logFile) fclose(game->logFile);
-            fclose(game->binFile);
             nullGame(game);
             *mode = MODE_MENU;
         }
 
+        if (GHP_clickInButton(event->button.x, event->button.y, &tex->buttons[BUT_MENU])) { // TODO: Menu should not save the game? Also think that when SDL_QUIT it is saving the file
+            char msgCloseGame[] = "\nEvent:PrematureGameEnd";
+            fwrite(msgCloseGame, sizeof(char), strlen(msgCloseGame), game->logFile);
+            saveGame(game, game->binFile);
+            *mode = MODE_MENU;
+
+        }
     }
 
 

@@ -13,7 +13,7 @@ void nullGame(GameState* game) {
 }
 
 void printGame(GameState* game) {
-    printf("\nCols:%d \nRows:%d \nbombsNum:%d \n", game->columns, game->rows, game->bombsNum);
+    printf("\nSeed: %d \nCols:%d \nRows:%d \nbombsNum:%d \n", game->seed, game->columns, game->rows, game->bombsNum);
 }
 
 void saveGame(GameState* game, FILE* file) {
@@ -28,19 +28,28 @@ void saveGame(GameState* game, FILE* file) {
             fwrite(&game->field[i][j], sizeof(mineCeld), 1, file);
         }
     }
+
+    fclose(game->binFile);
+    fclose(game->logFile);
+    game->binFile = NULL;
+    game->logFile = NULL;
 }
 
 void loadGame(GameState* game, FILE* file) {
-    fread(&game->started, sizeof(bool), 1, file);
+    fread(&game->started, sizeof(bool), 1, file); // TODO: Check
+    //game->started = true;
+
     int headers[6];
     fread(headers, sizeof(int), 6, file);
-
     game->seed = headers[0];
     game->columns = headers[1];
     game->rows = headers[2];
     game->bombsNum = headers[3];
     game->lost[0] = headers[4];
     game->lost[1] = headers[5];
+
+    printf("\nGame loaded:");
+    printGame(game);
 
     game->field = (mineCeld**)newDinMtx(game->rows, game->columns, sizeof(mineCeld));
 
@@ -53,3 +62,5 @@ void loadGame(GameState* game, FILE* file) {
     game->logFile = NULL; // TODO: Maybe save the log path and continue writing it
     game->binFile = file;
 }
+
+
