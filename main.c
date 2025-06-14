@@ -117,6 +117,7 @@ void react(SDL_Renderer* renderer, void* gameData, GHP_TexturesData* TexData) {
 }
 
 
+
 bool initGame(GameState* game, ConfigData* configs) {
 
     game->binFile = NULL;
@@ -224,7 +225,3 @@ int initTexts(SDL_Renderer* renderer, GHP_TexturesData* texData) {
     }
     return OK;
 }
-
-
-
-

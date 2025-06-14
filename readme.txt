@@ -30,13 +30,16 @@ TOFIX:
   YOU CANNOT LOAD GAMES WITH OTHER DIMENTIONS THAT THOSE
   THE CONFIG FILE HAS. IDK IF THERE IS ANOTHER WAY TO SOLVE IT
 * WHEN YOU RUN IT IN
+* ERROR WITH OPENING LOG: ALL REVEALED. DANGER: SECOND EXECUTION AND 
+  BEFORE WORKS, ONLY THE FIRST DOES NOT
 
 MAIN TODOS:
-* FILE SAVE STATS LAST 10 GAMES (REQ)
+* FILE SAVE STATS LAST 10 GAMES (REQ) ON SCREEN!!!
 * CHEAT (REQ)
 * AUTOREVEAL BOMB END GAME
-* CHANGE DIM IN SDL (how?)
+* CHANGE DIM IN SDL (how?) (just mesh dim)
 * SOME OPTIONS FROM SDL SELECTIONS
+* WIN SIGN
 
 * HOVER LIGHT
 * BETTER TEXTURES / VIEW -> PERSONALIZE
@@ -48,7 +51,10 @@ graphics -> none
 minesweeper -> gamestate
 configs -> gamestate
 main -> all
+UPDATE THIS
 
 TO ASK
-- files .h
-- link directories (build options)
+- files .h .a -> .a necessary, include them
+- files with no only-type-register. TODO: Save the whole strucure
+- time vars are too long, it's normal? -> YES, time() works with that, avoid compiling risks
+

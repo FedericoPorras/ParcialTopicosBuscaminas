@@ -89,6 +89,28 @@ void updateGameTime(SDL_Renderer* renderer, GameState* game, GHP_TexturesData* T
     }
 }
 
+void endGameHandleFiles(GameState* game, int mode) {
+
+    if (mode == MODE_LOST || mode == MODE_WIN) {
+
+        if (game->logFile) {
+            char log[12] = "\nEvent:";
+            mode == MODE_LOST ? strcat(log, "Lost") : strcat(log, "Win");
+            fwrite(log, sizeof(char), strlen(log), game->logFile);
+        }
+    }
+
+    saveGame(game, game->binFile);
+    fclose(game->binFile);
+    game->binFile = NULL;
+
+    if (game->logFile) {
+         fclose(game->logFile);
+         game->logFile = NULL;
+    }
+
+};
+
 
 // Play
 
@@ -99,7 +121,6 @@ void initPlay(SDL_Renderer* renderer, GameState* game, GHP_TexturesData* tex, Co
     if (!game->binFile) {
 
         time(&game->timeStart);
-
 
         applyConfig(configData, game);
         game->started = false;
@@ -136,7 +157,8 @@ void initPlay(SDL_Renderer* renderer, GameState* game, GHP_TexturesData* tex, Co
 
         mode_animation_mesh = 3;
 
-    } else {
+    }
+    else {
 
         loadGame(game, game->binFile);
         printf("\nGame data already exists. Maybe loaded from file.");
@@ -144,6 +166,7 @@ void initPlay(SDL_Renderer* renderer, GameState* game, GHP_TexturesData* tex, Co
 
         mode_animation_mesh = 2;
     }
+
 
     // TODO
     // log() -> time(START, END, GAME_TIME) pos(X,Y) action(PRESSED/FLAGGED/UNFLAGGED)
@@ -173,54 +196,57 @@ void handlerPlay(SDL_Renderer* renderer, GameState* game, GHP_TexturesData* tex,
 
             if (game->started) {
                 if (event->button.button == SDL_BUTTON_LEFT) {
-                    if (game->logFile) logFileWriteClick('L', pos, game->logFile);
+                    //if (game->logFile) logFileWriteClick('L', pos, game->logFile);
 
                     if (userRevealCeld(i, j, game) == CELD_BOMB) {
                         game->started = false;
-                        if (game->logFile) {
-                            char logLose[] = "\nEvent:Lost";
-                            fwrite(logLose, sizeof(char), strlen(logLose), game->logFile);
-                            fclose(game->logFile); game->logFile = NULL;
-                        }
-                        saveGame(game, game->binFile);
                         *mode = MODE_LOST;
                     }
 
                 } else if (event->button.button == SDL_BUTTON_RIGHT) {
                     userAuxActionCeld(i, j, game);
-                    if (game->logFile) logFileWriteClick('R', pos, game->logFile);
+                    //if (game->logFile) logFileWriteClick('R', pos, game->logFile);
                 }
 
                 if (game->started && checkWin(game->rows, game->columns, game->field)) // TODO: Show it in window
                     *mode = MODE_WIN;
-            } else {
-                // FIRST CELL DISCOVERED
-                time(&game->timeStart);
-                initField(game, pos);
-                userRevealCeld(i, j, game);
-                game->started = true;
-                char logSeed[17]; // maximum int representation has 10 chars length
-                sprintf(logSeed, "\nSEED:%d", game->seed);
-                printf("\nSEED: %d", game->seed);
-                fwrite(logSeed, sizeof(char), strlen(logSeed), game->logFile);
+
             }
+            else {
+                if (event->button.button == SDL_BUTTON_LEFT) {
+                    // FIRST CELL DISCOVERED
+                    time(&game->timeStart);
+                    initField(game, pos);
+                    userRevealCeld(i, j, game);
+                    game->started = true;
+                    char logSeed[17]; // maximum int representation has 10 chars length
+                    sprintf(logSeed, "\nSEED:%d", game->seed);
+                    printf("\nSEED: %d", game->seed);
+                    fwrite(logSeed, sizeof(char), strlen(logSeed), game->logFile);
+                }
+
+
+            }
+
+            logFileWriteClick(event->button.button == SDL_BUTTON_LEFT ? 'L' : 'R', pos, game->logFile);
 
         }
 
         if (GHP_clickInButton(event->button.x, event->button.y, &tex->buttons[BUT_SAVEGAME])) {
-            saveGame(game, game->binFile);
-            if (game->logFile) fclose(game->logFile);
-            nullGame(game);
+            char msgCloseGame[] = "\nEvent:GameSaved";
+            fwrite(msgCloseGame, sizeof(char), strlen(msgCloseGame), game->logFile);
             *mode = MODE_MENU;
         }
 
         if (GHP_clickInButton(event->button.x, event->button.y, &tex->buttons[BUT_MENU])) { // TODO: Menu should not save the game? Also think that when SDL_QUIT it is saving the file
             char msgCloseGame[] = "\nEvent:PrematureGameEnd";
             fwrite(msgCloseGame, sizeof(char), strlen(msgCloseGame), game->logFile);
-            saveGame(game, game->binFile);
             *mode = MODE_MENU;
-
         }
+
+        if (*mode != MODE_PLAY)
+            endGameHandleFiles(game, *mode);
+
     }
 
 
@@ -262,10 +288,11 @@ void handlerMenu(SDL_Renderer* renderer, GameState* game, GHP_TexturesData* tex,
 // Lost
 
 void initLost(SDL_Renderer* renderer, GameState* game, GHP_TexturesData* tex, ConfigData* configData, int* mode) {
+    //GHP_setBGColor(renderer, 255, 0, 0, 255);
+    //SDL_RenderPresent(renderer);
     GHP_renderButton(renderer, &tex->buttons[BUT_PLAYAGAIN], 870, HEIGHT*0.15);
     revealAll(game->rows, game->columns, game->field);
     renderMeshUpdated(renderer, game, tex, tex->active_mesh);
-    SDL_RenderPresent(renderer);
 }
 
 void handlerLost(SDL_Renderer* renderer, GameState* game, GHP_TexturesData* tex, SDL_Event* event, int* mode) {
@@ -274,13 +301,6 @@ void handlerLost(SDL_Renderer* renderer, GameState* game, GHP_TexturesData* tex,
     if (event->type == SDL_MOUSEBUTTONDOWN && event->button.button == SDL_BUTTON_LEFT && GHP_clickInButton(event->button.x, event->button.y, &tex->buttons[BUT_PLAYAGAIN]))
         nullGame(game);
 
-    /*
-    int pos[2][2] = { {1000, 300}, {1000 + 653 - 328, 300 + 308 - 34} };
-    if (event->button.button == SDL_BUTTON_LEFT) {
-        if (GHP_clickIn(event->button.x, event->button.y, pos))
-            *mode = MODE_MENU;
-    }
-    */
 }
 
 // Nameplayer
@@ -453,6 +473,7 @@ void initReplay(SDL_Renderer* renderer, GameState* game, GHP_TexturesData* tex, 
     bool headers_loaded = false;
     char log[MAX_LEN_LOG];
 
+    int i = 0;
     while(!headers_loaded) {
         fgets(log, MAX_LEN_LOG, game->logFile);
         if (strstr(log, "DIMENSION")) sscanf(log, "DIMENSION:%dx%d\n", &game->rows, &game->columns);
@@ -461,9 +482,18 @@ void initReplay(SDL_Renderer* renderer, GameState* game, GHP_TexturesData* tex, 
             sscanf(log, "SEED:%d\n", &game->seed);
             headers_loaded = true;
         }
+        i++;
+        if (i>10) printf("\nThere are many extra lines in the log file. ");
+        if(strstr(log, "PrematureGameEnd")) {
+            game->seed = -2;
+            headers_loaded = true;
+            *mode = MODE_SEARCHDIR;
+        }
     }
     emptyField(game->rows, game->columns, game->field);
     coverAll(game->rows, game->columns, game->field);
+    game->started = false;
+
     printf("\nReplay starts with this game:");
     printGame(game);
 }
@@ -500,14 +530,10 @@ void handlerReplay(SDL_Renderer* renderer, GameState* game, GHP_TexturesData* te
 
                 if (game->started) {
 
-                    if (type == 'L') {
-                        if (userRevealCeld(i, j, game) == CELD_BOMB) {
-                            game->started = false;
-                            fclose(game->logFile);
-                        }
-                    } else if (type == 'R') {
+                    if (type == 'L')
+                        userRevealCeld(i, j, game);
+                    else if (type == 'R')
                         userAuxActionCeld(i, j, game);
-                    }
                 } else {
                     initField(game, pos);
                     userRevealCeld(i, j, game);
@@ -523,6 +549,7 @@ void handlerReplay(SDL_Renderer* renderer, GameState* game, GHP_TexturesData* te
                 tex->texts[TEXT_SHOWLOG_L2].text[0] = '\0';
                 tex->texts[TEXT_SHOWLOG_L3].text[0] = '\0';
                 updateShowLogTextsEnd(renderer, tex);
+                revealAll(game->rows, game->columns, game->field);
             }
 
         } else { // no more logs -> game ended

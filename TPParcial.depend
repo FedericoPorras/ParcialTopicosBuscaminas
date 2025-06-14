@@ -1,5 +1,5 @@
 # depslib dependency file v1.0
-1749858973 source:d:\facu\topicos\tpparcial\main.c
+1749861545 source:d:\facu\topicos\tpparcial\main.c
 	"main.h"
 	<windows.h>
 
@@ -420,7 +420,7 @@
 1749855053 source:d:\facu\topicos\tpparcial\minesweeper.c
 	"minesweeper.h"
 
-1749858326 source:d:\facu\topicos\tpparcial\graphics.c
+1749906498 source:d:\facu\topicos\tpparcial\graphics.c
 	"graphics.h"
 
 1749848711 d:\facu\topicos\tpparcial\graphics.h
@@ -830,7 +830,7 @@
 	<time.h>
 	"dinMtx.h"
 
-1749856401 source:d:\facu\topicos\tpparcial\gamestate.c
+1749906582 source:d:\facu\topicos\tpparcial\gamestate.c
 	"gamestate.h"
 
 1650910406 d:\facu\topicos\tpparcial\lib\sdl2-2.0.22\x86_64-w64-mingw32\include\sdl2\sdl.h
@@ -1236,7 +1236,7 @@
 	"minesweeper.h"
 	<windows.h>
 
-1749858954 source:d:\facu\topicos\tpparcial\menus.c
+1749911916 source:d:\facu\topicos\tpparcial\menus.c
 	"menus.h"
 
 1749762482 d:\facu\topicos\tpparcial\dinmtx.h

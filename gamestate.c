@@ -17,12 +17,12 @@ void printGame(GameState* game) {
 
 }
 
-void saveGame(GameState* game, FILE* file) {
-    int headers[6] = {game->seed, game->columns, game->rows, game->bombsNum, game->lost[0], game->lost[1]};
+void saveGame(GameState* game, FILE* file) { // TODO: Save the struct game instead of each field
+    int headers[8] = {game->seed, game->columns, game->rows, game->bombsNum, game->lost[0], game->lost[1], game->last_selected[0], game->last_selected[1]};
 
     fseek(file, 0, SEEK_SET);
     fwrite(&game->started, sizeof(bool), 1, file);
-    fwrite(&headers, sizeof(int), 6, file);
+    fwrite(&headers, sizeof(int), 8, file);
 
     for (int i=0; i<game->rows; i++) {
         for (int j=0; j<game->columns; j++) {
@@ -42,14 +42,16 @@ void loadGame(GameState* game, FILE* file) {
     fread(&game->started, sizeof(bool), 1, file); // TODO: Check
     //game->started = true;
 
-    int headers[6];
-    fread(headers, sizeof(int), 6, file);
+    int headers[8];
+    fread(headers, sizeof(int), 8, file);
     game->seed = headers[0];
     game->columns = headers[1];
     game->rows = headers[2];
     game->bombsNum = headers[3];
     game->lost[0] = headers[4];
     game->lost[1] = headers[5];
+    game->last_selected[0] = headers[6];
+    game->last_selected[1] = headers[7];
 
     printf("\nGame loaded:");
     printGame(game);
@@ -74,3 +76,5 @@ struct tm timeGame(time_t timeG) {
     time_t dif = (time_t)difftime(now, timeG);
     return *gmtime(&dif);
 }
+
+

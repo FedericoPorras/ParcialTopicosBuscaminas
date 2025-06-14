@@ -143,9 +143,7 @@ void GHP_renderMesh(SDL_Renderer* renderer, GHP_Mesh* mesh, int dynamicPresent) 
 
         while (cellsRendered < totalCells) {
 
-            #ifdef _WIN32
-            Sleep((cellsRendered/totalCells)*30);
-            #endif // _WIN32
+            SDL_Delay((cellsRendered/totalCells)*30);
 
             // Move in the current direction
             x += directions[currentDir][0];
@@ -225,12 +223,12 @@ void GHP_renderMesh(SDL_Renderer* renderer, GHP_Mesh* mesh, int dynamicPresent) 
 
             SDL_RenderPresent(renderer);
 
-            #ifdef _WIN32
             int n = 40;
-            float more = (float)cellsRendered/totalCells - 0.8;
-            if (more > 0)  n+=(int)(more*more*1000);
-            Sleep(n);
-            #endif
+            float more = (float)cellsRendered/totalCells - 0.7;
+            if (more > 0)  n+=(int)(more*more*1000); // slow it in the last cells
+            SDL_Delay(n);
+
+
         }
     }
 
