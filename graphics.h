@@ -10,6 +10,10 @@
 #include <SDL_image.h>
 #include <SDL_ttf.h>
 
+#ifdef _WIN32
+#include <windows.h>
+#endif // _WIN32
+
 #define OK 0
 #define MEM_ERR 1
 #define DIM_ERR 2
@@ -56,12 +60,12 @@ typedef struct {
 
 typedef struct {
     GHP_Texture* textures;
+    int textures_loaded;
     GHP_Button* buttons;
     GHP_Texture* buttonsTexs;
+    int buttons_loaded;
     GHP_Text* texts;
     GHP_Texture* textsTexs;
-    int textures_loaded;
-    int buttons_loaded;
     int texts_loaded;
     GHP_Mesh active_mesh;
 } GHP_TexturesData;
@@ -78,7 +82,7 @@ GHP_Texture GHP_newTexture(SDL_Renderer* renderer, const char* path, int offsetX
 GHP_Texture GHP_newTextureAbs(SDL_Renderer* renderer, const char* path, int initX, int initY, int endX, int endY);
 void GHP_renderTexture(SDL_Renderer* renderer, GHP_Texture* ghp_tex, int offsetX, int offsetY);
 void GHP_destroyTexture(GHP_Texture* ghp_tex);
-void GHP_renderMesh(SDL_Renderer* renderer, GHP_Mesh* mesh, bool dynamicPresent);
+void GHP_renderMesh(SDL_Renderer* renderer, GHP_Mesh* mesh, int dynamicPresent);
 void GHP_setBGColor(SDL_Renderer* renderer, int r, int g, int b, int a);
 bool GHP_clickIn(int x, int y, int pos[2][2]);
 void GHP_meshPos(GHP_Mesh* mesh, int pos[2][2]);
@@ -94,6 +98,7 @@ void GHP_newText(SDL_Renderer* renderer, char* path, GHP_TexturesData* texData, 
 void GHP_updateTextTexture(SDL_Renderer* renderer, GHP_TexturesData* texData, int numberText, int sizeFont, SDL_Color color);
 bool GHP_clickInButton (int x, int y, GHP_Button* button);
 bool GHP_enterPressed(SDL_Event* event);
+void GHP_renderText(SDL_Renderer* renderer, GHP_TexturesData* texData, int numberText, int sizeFont, SDL_Color color, int windowX, int windowY);
 
 #endif // GRAPHICS_H_INCLUDED
 

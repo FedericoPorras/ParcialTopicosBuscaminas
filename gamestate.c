@@ -13,7 +13,8 @@ void nullGame(GameState* game) {
 }
 
 void printGame(GameState* game) {
-    printf("\nSeed: %d \nCols:%d \nRows:%d \nbombsNum:%d \n", game->seed, game->columns, game->rows, game->bombsNum);
+    printf("\nStarted: %d\nSeed: %d \nCols:%d \nRows:%d \nbombsNum:%d \n", (int)game->started, game->seed, game->columns, game->rows, game->bombsNum);
+
 }
 
 void saveGame(GameState* game, FILE* file) {
@@ -28,6 +29,8 @@ void saveGame(GameState* game, FILE* file) {
             fwrite(&game->field[i][j], sizeof(mineCeld), 1, file);
         }
     }
+
+    fwrite(&game->timeStart, sizeof(size_t), 1, file);
 
     fclose(game->binFile);
     fclose(game->logFile);
@@ -59,8 +62,15 @@ void loadGame(GameState* game, FILE* file) {
         }
     }
 
+    fread(&game->timeStart, sizeof(size_t), 1, file);
+
     game->logFile = NULL; // TODO: Maybe save the log path and continue writing it
     game->binFile = file;
 }
 
-
+struct tm timeGame(time_t timeG) {
+    time_t now;
+    time(&now);
+    time_t dif = (time_t)difftime(now, timeG);
+    return *gmtime(&dif);
+}

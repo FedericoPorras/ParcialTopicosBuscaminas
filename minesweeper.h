@@ -28,5 +28,6 @@ void initField(GameState* game, int pos[2]);
 int userRevealCeld(int i, int j, GameState* game);
 void userAuxActionCeld(int i, int j, GameState* game);
 void logFileWriteClick(char button, int* posInMesh, FILE* file);
+int minesUncovered(int bombsNum, int rows, int cols, mineCeld** field);
 
 #endif // MINESWEEPER_H_INCLUDED

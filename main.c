@@ -42,6 +42,8 @@ void react(SDL_Renderer* renderer, void* gameData, GHP_TexturesData* TexData) {
 
     GameState game;
     nullGame(&game);
+
+
     applyConfig(configs, &game);
     if (!initGame(&game, configs)) {
         printf("\nError in game initalizing");
@@ -101,7 +103,11 @@ void react(SDL_Renderer* renderer, void* gameData, GHP_TexturesData* TexData) {
                 SDL_RenderPresent(renderer);
             }
 
+            updateGameTime(renderer, &game, TexData, mode);
+
         }
+
+        updateGameTime(renderer, &game, TexData, mode); // It has to be twice to update each frame (with or without event)
 
     }
 
@@ -205,11 +211,10 @@ int initButtons(SDL_Renderer* renderer, GHP_TexturesData* texData) {
 }
 
 int initTexts(SDL_Renderer* renderer, GHP_TexturesData* texData) {
-    SDL_Color myColor = {255, 255, 255, 255};
-    GHP_newText(renderer, "ttf/Consolas-Regular.ttf", texData, &(texData->texts[TEXT_SEARCHFILESENTRY]), 52, 253, 20, myColor);
-    GHP_newText(renderer, "ttf/Consolas-Regular.ttf", texData, &(texData->texts[TEXT_SHOWLOG_L1]), 1000, 100, 20, myColor);
-    GHP_newText(renderer, "ttf/Consolas-Regular.ttf", texData, &(texData->texts[TEXT_SHOWLOG_L2]), 1000, 200, 20, myColor);
-    GHP_newText(renderer, "ttf/Consolas-Regular.ttf", texData, &(texData->texts[TEXT_SHOWLOG_L3]), 1000, 300, 20, myColor);
+    SDL_Color whiteColor = {255, 255, 255, 255};
+    char path[] = "ttf/Consolas-Regular.ttf";
+    for (int i=0; i<AMMOUNT_TEXTS; i++)
+        GHP_newText(renderer, path, texData, &(texData->texts[i]), -1, -1, -1, whiteColor);
 
     for(int i=0; i<AMMOUNT_TEXTS; i++) {
         if (! (texData->texts + i)->tex ) {
@@ -219,5 +224,7 @@ int initTexts(SDL_Renderer* renderer, GHP_TexturesData* texData) {
     }
     return OK;
 }
+
+
 
 

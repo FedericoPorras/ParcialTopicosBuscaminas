@@ -7,6 +7,12 @@
 #include "configs.h"
 #include "minesweeper.h"
 
+#ifndef _WIN32
+#include <windows.h>
+#endif // _WIN32
+
+
+
 #define MAX_LEN_LOG 100
 
 #define MODE_REPLAY 6
@@ -40,12 +46,16 @@
 #define TEXT_SHOWLOG_L1 1
 #define TEXT_SHOWLOG_L2 2
 #define TEXT_SHOWLOG_L3 3
-#define AMMOUNT_TEXTS 4
+#define TEXT_MINESPENDING 4
+#define TEXT_GAMETIME 5
+#define AMMOUNT_TEXTS 6
 
 
 #define WIDTH 1366
 #define HEIGHT 768
 #define WIDTH_SPACE_MESH_MINES 768
+
+#define WHITE_COLOR (SDL_Color){255, 255, 255, 255}
 
 
 typedef struct Section {
@@ -58,6 +68,7 @@ typedef struct Section {
 void renderMeshUpdated(SDL_Renderer* renderer, GameState* game, GHP_TexturesData* tex, GHP_Mesh mesh);
 void handleButtonsClick(GHP_Button* buttons, int ammount, int x, int y, GameState* game, int* mode, SDL_Event* event);
 void updateShowLogTexts(SDL_Renderer* renderer, GHP_TexturesData* tex, char type, int i, int j, int year, int mon, int dat, int hour, int min, int sec);
+void updateGameTime(SDL_Renderer* renderer, GameState* game, GHP_TexturesData* TexData, int mode);
 
 // for menus
 void initPlay(SDL_Renderer* renderer, GameState* game, GHP_TexturesData* tex, ConfigData* configData, int* mode);

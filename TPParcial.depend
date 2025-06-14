@@ -1,5 +1,5 @@
 # depslib dependency file v1.0
-1749829712 source:d:\facu\topicos\tpparcial\main.c
+1749858973 source:d:\facu\topicos\tpparcial\main.c
 	"main.h"
 	<windows.h>
 
@@ -397,7 +397,7 @@
 	"begin_code.h"
 	"close_code.h"
 
-1749762349 d:\facu\topicos\tpparcial\main.h
+1749844646 d:\facu\topicos\tpparcial\main.h
 	<SDL.h>
 	<stdbool.h>
 	<stdio.h>
@@ -410,26 +410,27 @@
 	"minesweeper.h"
 	"menus.h"
 
-1749816738 d:\facu\topicos\tpparcial\minesweeper.h
+1749842119 d:\facu\topicos\tpparcial\minesweeper.h
 	<stdbool.h>
 	<stdio.h>
 	<stdlib.h>
 	<time.h>
 	"gamestate.h"
 
-1749822577 source:d:\facu\topicos\tpparcial\minesweeper.c
+1749855053 source:d:\facu\topicos\tpparcial\minesweeper.c
 	"minesweeper.h"
 
-1749755103 source:d:\facu\topicos\tpparcial\graphics.c
+1749858326 source:d:\facu\topicos\tpparcial\graphics.c
 	"graphics.h"
 
-1749755085 d:\facu\topicos\tpparcial\graphics.h
+1749848711 d:\facu\topicos\tpparcial\graphics.h
 	<stdio.h>
 	<stdbool.h>
 	<string.h>
 	<SDL.h>
 	<SDL_image.h>
 	<SDL_ttf.h>
+	<windows.h>
 
 1650910406 d:\facu\topicos\tpparcial\sdl2-2.0.22\x86_64-w64-mingw32\include\sdl2\sdl.h
 	"SDL_main.h"
@@ -815,7 +816,7 @@
 	"begin_code.h"
 	"close_code.h"
 
-1749408176 source:d:\facu\topicos\tpparcial\configs.c
+1749856277 source:d:\facu\topicos\tpparcial\configs.c
 	"configs.h"
 
 1749409263 d:\facu\topicos\tpparcial\configs.h
@@ -823,13 +824,13 @@
 	<string.h>
 	"gamestate.h"
 
-1749816569 d:\facu\topicos\tpparcial\gamestate.h
+1749854707 d:\facu\topicos\tpparcial\gamestate.h
 	<stdbool.h>
 	<stdio.h>
 	<time.h>
 	"dinMtx.h"
 
-1749831760 source:d:\facu\topicos\tpparcial\gamestate.c
+1749856401 source:d:\facu\topicos\tpparcial\gamestate.c
 	"gamestate.h"
 
 1650910406 d:\facu\topicos\tpparcial\lib\sdl2-2.0.22\x86_64-w64-mingw32\include\sdl2\sdl.h
@@ -1227,14 +1228,15 @@
 	"begin_code.h"
 	"close_code.h"
 
-1749819230 d:\facu\topicos\tpparcial\menus.h
+1749846587 d:\facu\topicos\tpparcial\menus.h
 	"dirHandle.h"
 	"graphics.h"
 	"gamestate.h"
 	"configs.h"
 	"minesweeper.h"
+	<windows.h>
 
-1749831336 source:d:\facu\topicos\tpparcial\menus.c
+1749858954 source:d:\facu\topicos\tpparcial\menus.c
 	"menus.h"
 
 1749762482 d:\facu\topicos\tpparcial\dinmtx.h

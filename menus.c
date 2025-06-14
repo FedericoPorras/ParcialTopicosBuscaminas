@@ -28,6 +28,19 @@ void renderMeshUpdated(SDL_Renderer* renderer, GameState* game, GHP_TexturesData
             }
         }
     }
+
+    if (game->started) {
+        int width_cell = tex->textures[TEX_BOMB].width;
+        int height_cell = tex->textures[TEX_BOMB].height;
+        int i = game->last_selected[0];
+        int j = game->last_selected[1];
+        mineCeld* selected_cell = &game->field[i][j];
+        if (!selected_cell->bomb) {
+            SDL_Rect rect = {j*width_cell+mesh.offsetX, i*height_cell+mesh.offsetY, width_cell, height_cell}; // could be any cell of texs, its only for the dimensions
+            SDL_SetRenderDrawColor(renderer, 0, 0, 255, 50);
+            SDL_RenderFillRect(renderer, &rect);
+        }
+    }
 }
 
 void handleButtonsClick(GHP_Button* buttons, int ammount, int x, int y, GameState* game, int* mode, SDL_Event* event) {
@@ -40,17 +53,40 @@ void handleButtonsClick(GHP_Button* buttons, int ammount, int x, int y, GameStat
 }
 
 void updateShowLogTexts(SDL_Renderer* renderer, GHP_TexturesData* tex, char type, int i, int j, int year, int mon, int day, int hour, int min, int sec) {
-        SDL_Color whiteColor = {255, 255, 255, 255};
-        char movementStr[MAX_LEN_LOG];
-        sprintf(movementStr, "%s CLICK", type=='R' ? "RIGHT" : "LEFT");
-        strcpy(tex->texts[TEXT_SHOWLOG_L1].text, movementStr);
-        sprintf(movementStr, "COORDS: (X: %d / Y: %d)", i, j);
-        strcpy(tex->texts[TEXT_SHOWLOG_L2].text, movementStr);
-        sprintf(movementStr, "%d:%d:%d %d/%d/%d", hour, min, sec, day, mon, year);
-        strcpy(tex->texts[TEXT_SHOWLOG_L3].text, movementStr);
-        GHP_updateTextTexture(renderer, tex, TEXT_SHOWLOG_L1, 20, whiteColor);
-        GHP_updateTextTexture(renderer, tex, TEXT_SHOWLOG_L2, 20, whiteColor);
-        GHP_updateTextTexture(renderer, tex, TEXT_SHOWLOG_L3, 20, whiteColor);
+    SDL_Color whiteColor = {255, 255, 255, 255};
+    char movementStr[MAX_LEN_LOG];
+    sprintf(movementStr, "%s CLICK", type=='R' ? "RIGHT" : "LEFT");
+    strcpy(tex->texts[TEXT_SHOWLOG_L1].text, movementStr);
+    sprintf(movementStr, "COORDS: (X: %d / Y: %d)", i, j);
+    strcpy(tex->texts[TEXT_SHOWLOG_L2].text, movementStr);
+    sprintf(movementStr, "%d:%d:%d %d/%d/%d", hour, min, sec, day, mon, year);
+    strcpy(tex->texts[TEXT_SHOWLOG_L3].text, movementStr);
+    GHP_updateTextTexture(renderer, tex, TEXT_SHOWLOG_L1, 20, whiteColor);
+    GHP_updateTextTexture(renderer, tex, TEXT_SHOWLOG_L2, 20, whiteColor);
+    GHP_updateTextTexture(renderer, tex, TEXT_SHOWLOG_L3, 20, whiteColor);
+}
+
+void updateShowLogTextsEnd(SDL_Renderer* renderer, GHP_TexturesData* tex) {
+    SDL_Color whiteColor = {255, 255, 255, 255};
+    GHP_updateTextTexture(renderer, tex, TEXT_SHOWLOG_L1, 20, whiteColor);
+    GHP_updateTextTexture(renderer, tex, TEXT_SHOWLOG_L2, 20, whiteColor);
+    GHP_updateTextTexture(renderer, tex, TEXT_SHOWLOG_L3, 20, whiteColor);
+}
+
+void updateGameTime(SDL_Renderer* renderer, GameState* game, GHP_TexturesData* TexData, int mode) {
+    if (mode==MODE_PLAY && game->started) {
+        struct tm t = timeGame(game->timeStart);
+
+        // TODO put it in a func
+        SDL_Rect rect = {WIDTH_SPACE_MESH_MINES+50, HEIGHT*0.55, TexData->textsTexs[TEXT_GAMETIME].width, TexData->textsTexs[TEXT_GAMETIME].height};
+        SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255); // Black TODO
+        SDL_RenderFillRect(renderer, &rect);
+
+        sprintf(TexData->texts[TEXT_GAMETIME].text, "Time: %02d:%02d:%02d", t.tm_hour, t.tm_min, t.tm_sec);
+        GHP_updateTextTexture(renderer, TexData, TEXT_GAMETIME, 20, WHITE_COLOR);
+        GHP_renderText(renderer, TexData, TEXT_GAMETIME, 30, WHITE_COLOR, WIDTH_SPACE_MESH_MINES+50, HEIGHT*0.55);
+        SDL_RenderPresent(renderer);
+    }
 }
 
 
@@ -58,11 +94,18 @@ void updateShowLogTexts(SDL_Renderer* renderer, GHP_TexturesData* tex, char type
 
 void initPlay(SDL_Renderer* renderer, GameState* game, GHP_TexturesData* tex, ConfigData* configData, int* mode) {
 
+    int mode_animation_mesh = 0;
+
     if (!game->binFile) {
+
+        time(&game->timeStart);
+
 
         applyConfig(configData, game);
         game->started = false;
         coverAll(game->rows, game->columns, game->field);
+        printf("\nGame data loadaded from config.");
+        printGame(game);
 
         char fileName[38];
         char initTimeLog[32];
@@ -91,10 +134,15 @@ void initPlay(SDL_Renderer* renderer, GameState* game, GHP_TexturesData* tex, Co
 
         fprintf(game->logFile, "\nDIMENSION:%dx%d\nMINES:%d", game->rows, game->columns, game->bombsNum); // TODO: Join both texts
 
+        mode_animation_mesh = 3;
+
     } else {
 
         loadGame(game, game->binFile);
+        printf("\nGame data already exists. Maybe loaded from file.");
+        printGame(game);
 
+        mode_animation_mesh = 2;
     }
 
     // TODO
@@ -103,9 +151,11 @@ void initPlay(SDL_Renderer* renderer, GameState* game, GHP_TexturesData* tex, Co
 
     GHP_setBGColor(renderer, 0, 0, 0, 255);
     SDL_RenderClear(renderer);
-    GHP_renderMesh(renderer, &(tex->active_mesh), false);
+    GHP_renderMesh(renderer, &(tex->active_mesh), mode_animation_mesh);
+
     GHP_renderButton(renderer, &tex->buttons[BUT_SAVEGAME], WIDTH_SPACE_MESH_MINES + 50, HEIGHT*0.6);
     GHP_renderButton(renderer, &tex->buttons[BUT_MENU], WIDTH_SPACE_MESH_MINES + 50, HEIGHT*0.2);
+    GHP_renderText(renderer, tex, TEXT_MINESPENDING, 30, WHITE_COLOR, WIDTH_SPACE_MESH_MINES+50, HEIGHT*0.5);
 }
 
 void handlerPlay(SDL_Renderer* renderer, GameState* game, GHP_TexturesData* tex, SDL_Event* event, int* mode) {
@@ -119,6 +169,7 @@ void handlerPlay(SDL_Renderer* renderer, GameState* game, GHP_TexturesData* tex,
             int pos[2];
             GHP_coordsToPos(&(tex->active_mesh), event->button.x, event->button.y, pos);
             int i = *pos; int j = *(pos+1);
+            memcpy(game->last_selected, pos, sizeof(pos));
 
             if (game->started) {
                 if (event->button.button == SDL_BUTTON_LEFT) {
@@ -143,14 +194,17 @@ void handlerPlay(SDL_Renderer* renderer, GameState* game, GHP_TexturesData* tex,
                 if (game->started && checkWin(game->rows, game->columns, game->field)) // TODO: Show it in window
                     *mode = MODE_WIN;
             } else {
-                // to avoid first click bomb
+                // FIRST CELL DISCOVERED
+                time(&game->timeStart);
                 initField(game, pos);
                 userRevealCeld(i, j, game);
                 game->started = true;
                 char logSeed[17]; // maximum int representation has 10 chars length
                 sprintf(logSeed, "\nSEED:%d", game->seed);
+                printf("\nSEED: %d", game->seed);
                 fwrite(logSeed, sizeof(char), strlen(logSeed), game->logFile);
             }
+
         }
 
         if (GHP_clickInButton(event->button.x, event->button.y, &tex->buttons[BUT_SAVEGAME])) {
@@ -173,9 +227,17 @@ void handlerPlay(SDL_Renderer* renderer, GameState* game, GHP_TexturesData* tex,
 }
 
 void renderPlay(SDL_Renderer* renderer, GameState* game, GHP_TexturesData* tex, int* mode) {
+    sprintf(tex->texts[TEXT_MINESPENDING].text, "%3d Mines Pending", minesUncovered(game->bombsNum, game->rows, game->columns, game->field) );
 
-    // TODO: Only re-render the changed celds
+    // TODO put it in a func
+    SDL_Rect rect = {WIDTH_SPACE_MESH_MINES+50, HEIGHT*0.5, tex->textsTexs[TEXT_MINESPENDING].width, tex->textsTexs[TEXT_MINESPENDING].height};
+    SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255); // Black TODO
+    SDL_RenderFillRect(renderer, &rect);
+
     renderMeshUpdated(renderer, game, tex, tex->active_mesh);
+    GHP_renderText(renderer, tex, TEXT_MINESPENDING, 30, WHITE_COLOR, WIDTH_SPACE_MESH_MINES+50, HEIGHT*0.5);
+    GHP_renderButton(renderer, &tex->buttons[BUT_SAVEGAME], WIDTH_SPACE_MESH_MINES + 50, HEIGHT*0.6);
+    GHP_renderButton(renderer, &tex->buttons[BUT_MENU], WIDTH_SPACE_MESH_MINES + 50, HEIGHT*0.2);
 }
 
 // Menu
@@ -402,7 +464,8 @@ void initReplay(SDL_Renderer* renderer, GameState* game, GHP_TexturesData* tex, 
     }
     emptyField(game->rows, game->columns, game->field);
     coverAll(game->rows, game->columns, game->field);
-
+    printf("\nReplay starts with this game:");
+    printGame(game);
 }
 
 void handlerReplay(SDL_Renderer* renderer, GameState* game, GHP_TexturesData* tex, SDL_Event* event, int* mode) {
@@ -428,11 +491,12 @@ void handlerReplay(SDL_Renderer* renderer, GameState* game, GHP_TexturesData* te
 
             //"%s CLICK\nCOORDS:\nX:%d\nY:%d\nDay:%d/%d/%d\nat %02d:%02d:%02d",type=='R' ? "RIGHT" : "LEFT"
 
-            updateShowLogTexts(renderer, tex, type, i, j, year, mon, day, hour, min, sec);
+
 
             if (strcmp(eventLog, "Click") == 0) {
 
                 int pos[2] = {i, j};
+                memcpy(game->last_selected, pos, sizeof(pos));
 
                 if (game->started) {
 
@@ -447,16 +511,22 @@ void handlerReplay(SDL_Renderer* renderer, GameState* game, GHP_TexturesData* te
                 } else {
                     initField(game, pos);
                     userRevealCeld(i, j, game);
-                    game->started = true;
+                    //game->started = true;
                 }
 
+                updateShowLogTexts(renderer, tex, type, i, j, year, mon, day, hour, min, sec);
+
             }
-            else if (strcmp(eventLog, "Win") == 0) {
-                *mode = MODE_SEARCHDIR;
-                game->started = false;
+
+            else {
+                strcpy(tex->texts[TEXT_SHOWLOG_L1].text, (const char *)&eventLog);
+                tex->texts[TEXT_SHOWLOG_L2].text[0] = '\0';
+                tex->texts[TEXT_SHOWLOG_L3].text[0] = '\0';
+                updateShowLogTextsEnd(renderer, tex);
             }
 
         } else { // no more logs -> game ended
+            fclose(game->logFile);
             *mode = MODE_SEARCHDIR;
             game->started = false;
         }

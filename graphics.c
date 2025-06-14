@@ -93,13 +93,147 @@ void GHP_destroyTexture(GHP_Texture* ghp_tex) {
     SDL_DestroyTexture(ghp_tex->tex);
 }
 
-void GHP_renderMesh(SDL_Renderer* renderer, GHP_Mesh* mesh, bool dynamicPresent) {
-    for (int i=0; i<mesh->rows; i++) {
-        for (int j=0; j<mesh->cols; j++) {
-            GHP_renderTexture(renderer, mesh->txtr, mesh->offsetX + j * mesh->txtr->width, mesh->offsetY + i * mesh->txtr->height);
-            if (dynamicPresent) SDL_RenderPresent(renderer);
+void GHP_renderMesh(SDL_Renderer* renderer, GHP_Mesh* mesh, int dynamicPresent) {
+
+    // TODO: CHECK DYNAMIC PRESENTS
+
+    if (dynamicPresent == 0) {
+        for (int i=0; i<mesh->rows; i++) {
+            for (int j=0; j<mesh->cols; j++) {
+                GHP_renderTexture(renderer, mesh->txtr, mesh->offsetX + j * mesh->txtr->width, mesh->offsetY + i * mesh->txtr->height);
+                if (dynamicPresent) SDL_RenderPresent(renderer);
+            }
         }
     }
+
+
+    if (dynamicPresent == 1) {
+        for (int i=0; i<mesh->rows; i++) {
+            for (int j=0; j<mesh->cols; j++) {
+                GHP_renderTexture(renderer, mesh->txtr, mesh->offsetX + j * mesh->txtr->width, mesh->offsetY + i * mesh->txtr->height);
+                if (dynamicPresent) SDL_RenderPresent(renderer);
+            }
+        }
+    }
+
+
+    if (dynamicPresent == 2) { // TODO: CHECK HOW IT WORKS
+        int rows = mesh->rows;
+        int cols = mesh->cols;
+        int totalCells = rows * cols;
+        int cellsRendered = 0;
+
+        // Start at the center of the mesh
+        int centerX = cols / 2;
+        int centerY = rows / 2;
+        int x = centerX, y = centerY;
+
+        // Direction vectors: right, down, left, up
+        int directions[4][2] = {{1, 0}, {0, 1}, {-1, 0}, {0, -1}};
+        int currentDir = 0;  // Start moving right
+        int stepSize = 1;    // Initial step length
+        int stepsTaken = 0;  // Steps in current direction
+        int stepCount = 0;   // Total steps before direction change
+
+        // Render the center cell first
+        GHP_renderTexture(renderer, mesh->txtr,
+                         mesh->offsetX + x * mesh->txtr->width,
+                         mesh->offsetY + y * mesh->txtr->height);
+        cellsRendered++;
+
+        while (cellsRendered < totalCells) {
+
+            #ifdef _WIN32
+            Sleep((cellsRendered/totalCells)*30);
+            #endif // _WIN32
+
+            // Move in the current direction
+            x += directions[currentDir][0];
+            y += directions[currentDir][1];
+            stepsTaken++;
+
+            // Only render if within bounds
+            if (x >= 0 && x < cols && y >= 0 && y < rows) {
+                GHP_renderTexture(renderer, mesh->txtr,
+                                mesh->offsetX + x * mesh->txtr->width,
+                                mesh->offsetY + y * mesh->txtr->height);
+                cellsRendered++;
+                if (dynamicPresent) SDL_RenderPresent(renderer);
+            }
+
+            // Change direction when step size is completed
+            if (stepsTaken == stepSize) {
+                currentDir = (currentDir + 1) % 4;  // Cycle through directions
+                stepsTaken = 0;
+                stepCount++;
+
+                // Increase step size every 2 direction changes (spiral expansion)
+                if (stepCount % 2 == 0) {
+                    stepSize++;
+                }
+            }
+        }
+    }
+
+    if (dynamicPresent == 3) {
+        int rows = mesh->rows;
+        int cols = mesh->cols;
+        int totalCells = rows * cols;
+        int cellsRendered = 0;
+
+        // Start from center
+        int centerX = cols / 2;
+        int centerY = rows / 2;
+
+        // Render center cell first
+        GHP_renderTexture(renderer, mesh->txtr,
+                         mesh->offsetX + centerX * mesh->txtr->width,
+                         mesh->offsetY + centerY * mesh->txtr->height);
+        cellsRendered++;
+        SDL_RenderPresent(renderer);
+
+        // Expand outward in rings
+        for (int radius = 1; cellsRendered < totalCells; radius++) {
+            // Diamond pattern coordinates
+            for (int i = 0; i <= radius; i++) {
+                int j = radius - i;
+
+                // 4 symmetric quadrants
+                int coords[4][2] = {
+                    {centerX + i, centerY + j},  // NE
+                    {centerX - i, centerY + j},  // NW
+                    {centerX + i, centerY - j},  // SE
+                    {centerX - i, centerY - j}   // SW
+                };
+
+                // Render all valid positions in current ring
+                for (int k = 0; k < 4; k++) {
+                    int x = coords[k][0];
+                    int y = coords[k][1];
+
+                    // Skip center point after first iteration
+                    if (radius == 1 && k > 0 && x == centerX && y == centerY) continue;
+
+                    if (x >= 0 && x < cols && y >= 0 && y < rows) {
+                        GHP_renderTexture(renderer, mesh->txtr,
+                                         mesh->offsetX + x * mesh->txtr->width,
+                                         mesh->offsetY + y * mesh->txtr->height);
+                        cellsRendered++;
+                    }
+                }
+            }
+
+            SDL_RenderPresent(renderer);
+
+            #ifdef _WIN32
+            int n = 40;
+            float more = (float)cellsRendered/totalCells - 0.8;
+            if (more > 0)  n+=(int)(more*more*1000);
+            Sleep(n);
+            #endif
+        }
+    }
+
 }
 
 void GHP_setBGColor(SDL_Renderer* renderer, int r, int g, int b, int a) {
@@ -247,6 +381,13 @@ void GHP_newText(SDL_Renderer* renderer, char* path, GHP_TexturesData* texData, 
 
 void GHP_updateTextTexture(SDL_Renderer* renderer, GHP_TexturesData* texData, int numberText, int sizeFont, SDL_Color color) {
     texData->textsTexs[numberText] = GHP_textTexture(renderer, texData->texts[numberText].path, sizeFont, color, texData->texts[numberText].text);
+}
+
+
+
+void GHP_renderText(SDL_Renderer* renderer, GHP_TexturesData* texData, int numberText, int sizeFont, SDL_Color color, int windowX, int windowY) {
+    GHP_updateTextTexture(renderer, texData, numberText, sizeFont, color);
+    GHP_renderTexture(renderer, texData->texts[numberText].tex, windowX, windowY);
 }
 
 bool GHP_enterPressed(SDL_Event* event) {

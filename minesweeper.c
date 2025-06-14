@@ -14,7 +14,7 @@ const char masks[] = {0x01, 0x02, 0x04, 0x08, 0x10, 0x20, 0x40, 0x80};
 void emptyField(int rows, int cols, mineCeld** field) {
     for (int i=0; i<rows; i++) {
         for (int j=0; j<cols; j++) {
-            field[i][j] = (mineCeld){false, false, false, false, 0};
+            field[i][j] = (mineCeld){false, false, false, 0}; // TODO maybe nullCeld?
         }
     }
 }
@@ -186,15 +186,14 @@ void logFileWriteClick(char button, int* posInMesh, FILE* file) {
     fprintf(file, "\nEvent:Click/Type:%c/PosMesh:(%02d,%02d)/Date:(%s)", button, *posInMesh, *(posInMesh+1), date);
 }
 
-void autoFlag(int i, int j, mineCeld** field) {
-
-
-
-
-
-
-
+int minesUncovered(int bombsNum, int rows, int cols, mineCeld** field) {
+    for (int i=0; i<rows; i++) {
+        for (int j=0; j<cols; j++) {
+            if (field[i][j].flag)
+                bombsNum--;
+        }
+    }
+    return bombsNum;
 }
-
 
 
