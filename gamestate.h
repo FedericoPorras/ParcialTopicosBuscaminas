@@ -4,7 +4,11 @@
 #include <stdbool.h>
 #include <stdio.h>
 #include <time.h>
+#include <string.h>
 #include "dinMtx.h"
+
+#define MAX_LEN_NAME 30
+#define LEN_SAVE10LOG 127
 
 typedef struct {
     bool bomb;
@@ -24,14 +28,20 @@ typedef struct {
     FILE* logFile;
     FILE* binFile;
     time_t timeStart;
+    time_t timeFinish;
     int last_selected[2];
+    char nameUser[MAX_LEN_NAME];
+    int hovering[2];
 } GameState;
 
 void nullGame(GameState* game);
 void printGame(GameState* game);
-void saveGame(GameState* game, FILE* file);
-void loadGame(GameState* game, FILE* file);
+void saveGameBin(GameState* game, FILE* file);
 struct tm timeGame(time_t timeG);
+void saveGameStats(GameState* game, FILE* last10file, char* namePlayer, int gameEnd);
+void gameStats(GameState* game, int stats[3]);
+void loadGameStatsLast10(GameState* game, char dest[10][LEN_SAVE10LOG]);
+void saveGameStatsLast10(GameState* game, char* namePlayer, int gameEnd);
 
 #endif // GAMESTATE_H_INCLUDED
 

@@ -20,6 +20,7 @@
 #define FILE_ERR 3
 
 #define GHP_TEXT_LIMIT 51
+#define GHP_TEXT_EXTRA_LIMIT 50
 #define GHP_LIMIT_PATH 51
 
 struct GHP_WindowData {
@@ -55,7 +56,7 @@ typedef struct {
     char path[GHP_LIMIT_PATH];
     int windowX;
     int windowY;
-    char text[GHP_TEXT_LIMIT];
+    char text[GHP_TEXT_LIMIT+GHP_TEXT_EXTRA_LIMIT];
 } GHP_Text;
 
 typedef struct {

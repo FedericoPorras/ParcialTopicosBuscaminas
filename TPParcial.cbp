@@ -69,6 +69,10 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="graphics.h" />
+		<Unit filename="init.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="init.h" />
 		<Unit filename="main.c">
 			<Option compilerVar="CC" />
 		</Unit>

@@ -1,61 +1,17 @@
 #ifndef MENUS_H_INCLUDED
 #define MENUS_H_INCLUDED
 
+#include "constants.h"
 #include "dirHandle.h"
 #include "graphics.h"
 #include "gamestate.h"
 #include "configs.h"
 #include "minesweeper.h"
+#include "init.h"
 
 #ifndef _WIN32
 #include <windows.h>
 #endif // _WIN32
-
-
-
-#define MAX_LEN_LOG 100
-
-#define MODE_REPLAY 6
-#define MODE_SEARCHDIR 5
-#define MODE_WIN 4
-#define MODE_NAMEPLAYER 3
-#define MODE_LOST 2
-#define MODE_PLAY 1
-#define MODE_MENU 0
-#define MODE_END -1
-
-#define TEX_HIDDEN 9
-#define TEX_FLAG 10
-#define TEX_BOMB 11
-#define TEX_BOMBBOOM 12
-#define AMMOUNT_TEXTURES 14
-#define AMM_TEXT_COL_ASSET 7
-#define AMMOUNT_ASSETS 7
-
-#define BUT_START 0
-#define BUT_PLAYAGAIN 1
-#define BUT_NAMEPLAYER 2
-#define BUT_MENU 3
-#define BUT_SAVENAME 4
-#define BUT_SEARCHDIR 5
-#define BUT_REPLAYACTION 6
-#define BUT_SAVEGAME 7
-#define AMMOUNT_BUTTONS 8
-
-#define TEXT_SEARCHFILESENTRY 0
-#define TEXT_SHOWLOG_L1 1
-#define TEXT_SHOWLOG_L2 2
-#define TEXT_SHOWLOG_L3 3
-#define TEXT_MINESPENDING 4
-#define TEXT_GAMETIME 5
-#define AMMOUNT_TEXTS 6
-
-
-#define WIDTH 1366
-#define HEIGHT 768
-#define WIDTH_SPACE_MESH_MINES 768
-
-#define WHITE_COLOR (SDL_Color){255, 255, 255, 255}
 
 
 typedef struct Section {
@@ -69,6 +25,9 @@ void renderMeshUpdated(SDL_Renderer* renderer, GameState* game, GHP_TexturesData
 void handleButtonsClick(GHP_Button* buttons, int ammount, int x, int y, GameState* game, int* mode, SDL_Event* event);
 void updateShowLogTexts(SDL_Renderer* renderer, GHP_TexturesData* tex, char type, int i, int j, int year, int mon, int dat, int hour, int min, int sec);
 void updateGameTime(SDL_Renderer* renderer, GameState* game, GHP_TexturesData* TexData, int mode);
+void endGameHandleFiles(GameState* game, int mode);
+void last10Log(GameState* game, int mod);
+void loadGame(SDL_Renderer* renderer, GameState* game, GHP_TexturesData* TexData, FILE* file, int* mode);
 
 // for menus
 void initPlay(SDL_Renderer* renderer, GameState* game, GHP_TexturesData* tex, ConfigData* configData, int* mode);
@@ -90,15 +49,7 @@ void initReplay(SDL_Renderer* renderer, GameState* game, GHP_TexturesData* tex, 
 void handlerReplay(SDL_Renderer* renderer, GameState* game, GHP_TexturesData* tex, SDL_Event* event, int* mode);
 void renderReplay(SDL_Renderer* renderer, GameState* game, GHP_TexturesData* tex, int* mode);
 void handleButtonsClick(GHP_Button* buttons, int ammount, int x, int y, GameState* game, int* mode, SDL_Event* event);
-
-
-// for buttons reactions
-void setModePlay(void* gameData, int* mode);
-void setModeMenu(void* gameData, int* mode);
-void setModeLost(void* gameData, int* mode);
-void setModeNameplayer(void* gameData, int* mode);
-void setModeSearchDir(void* gameData, int*mode);
-
-
+void initStats(SDL_Renderer* renderer, GameState* game, GHP_TexturesData* tex, ConfigData* configData, int* mode);
+void handlerStats(SDL_Renderer* renderer, GameState* game, GHP_TexturesData* tex, SDL_Event* event, int* mode);
 
 #endif // MENUS_H_INCLUDED
