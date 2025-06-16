@@ -40,7 +40,7 @@ void saveGameBin(GameState* game, FILE* file);
 struct tm timeGame(time_t timeG);
 void saveGameStats(GameState* game, FILE* last10file, char* namePlayer, int gameEnd);
 void gameStats(GameState* game, int stats[3]);
-void loadGameStatsLast10(GameState* game, char dest[10][LEN_SAVE10LOG]);
+int loadGameStatsLast10(GameState* game, char dest[10][LEN_SAVE10LOG]);
 void saveGameStatsLast10(GameState* game, char* namePlayer, int gameEnd);
 
 #endif // GAMESTATE_H_INCLUDED

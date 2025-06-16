@@ -1,0 +1,14 @@
+DATE:2025-6-15-20-55-44
+DIMENSION:8x8
+MINES:16
+SEED:1750031745
+Event:Click/Type:L/PosMesh:(03,04)/Date:(2025-06-15-20-55-45)
+Event:Click/Type:L/PosMesh:(03,03)/Date:(2025-06-15-20-55-45)
+Event:Click/Type:L/PosMesh:(04,03)/Date:(2025-06-15-20-55-46)
+Event:Click/Type:L/PosMesh:(03,02)/Date:(2025-06-15-20-55-47)
+Event:Click/Type:L/PosMesh:(02,03)/Date:(2025-06-15-20-55-47)
+Event:Click/Type:R/PosMesh:(02,02)/Date:(2025-06-15-20-55-51)
+Event:Click/Type:R/PosMesh:(04,02)/Date:(2025-06-15-20-55-51)
+Event:Click/Type:R/PosMesh:(02,04)/Date:(2025-06-15-20-55-52)
+Event:Click/Type:L/PosMesh:(04,04)/Date:(2025-06-15-20-55-52)
+Event:Lost

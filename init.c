@@ -17,17 +17,23 @@ bool initGame(GameState* game, ConfigData* configs, GHP_TexturesData* TexData, S
 
     emptyField(game->rows, game->columns, game->field);
 
+    strcpy(game->nameUser, "<Anonymous User>");
+
     if (initTexData(TexData, renderer, game) != OK)
         return false;
 
     return true;
 }
 
-int initTexData(GHP_TexturesData* tex_data, SDL_Renderer* renderer, GameState* game) { // TODO: put it on another place
+int initTexData(GHP_TexturesData* tex_data, SDL_Renderer* renderer, GameState* game) {
+
+    if (!GHP_setBG(renderer, tex_data, PATH_BG)) {
+        return FILE_ERR;
+    }
 
     // choose appropriate dimension
     int stdDimGrid[] = { 8, 10, 15, 18, 24, 32, 40};
-    int stdDimPix[]  = {76, 58, 48, 38, 29, 22, 16};
+    int stdDimPix[]  = {76, 58, 48, 38, 29, 22, 16}; // TODO: CHECK
     int dimGridTex = 0, i = 0;
     while (!dimGridTex && i<AMMOUNT_ASSETS) {
         if (game->columns > stdDimGrid[i] || game->rows > stdDimGrid[i]) i++;
@@ -50,7 +56,7 @@ int initTexData(GHP_TexturesData* tex_data, SDL_Renderer* renderer, GameState* g
     }
 
     if (i > AMMOUNT_ASSETS) {
-        printf("\nDimension error"); // TODO: Check this error
+        printf("\nDimension error");
         return FILE_ERR;
     }
 
@@ -92,6 +98,7 @@ int initButtons(SDL_Renderer* renderer, GHP_TexturesData* texData) {
     GHP_newButtonAbs(renderer, "img/buttons.png", texData, &texData->buttons[BUT_REPLAYACTION], 97, 640, 228, 763, NULL);
     GHP_newButtonAbs(renderer, "img/buttons.png", texData, &texData->buttons[BUT_SAVEGAME], 596, 734, 960, 869, setModePlay);
     GHP_newButtonAbs(renderer, "img/buttons.png", texData, &texData->buttons[BUT_STATS], 595, 890, 959, 1025, setModeStats);
+    GHP_newButtonAbs(renderer, "img/buttons.png", texData, &texData->buttons[BUT_SETTINGS], 596, 1068, 958, 1203, setModeSettings);
 
     for(int i=0; i<AMMOUNT_BUTTONS; i++) {
         if (! (texData->buttons + i)->tex ) {
@@ -104,14 +111,16 @@ int initButtons(SDL_Renderer* renderer, GHP_TexturesData* texData) {
 
 int initTexts(SDL_Renderer* renderer, GHP_TexturesData* texData) {
     SDL_Color whiteColor = {255, 255, 255, 255};
-    char path[] = "ttf/Consolas-Regular.ttf";
-    for (int i=0; i<AMMOUNT_TEXTS; i++)
+    char path[] = "fnt/Consolas-Regular.ttf";
+    for (int i=0; i<AMMOUNT_TEXTS; i++) {
         GHP_newText(renderer, path, texData, &(texData->texts[i]), -1, -1, -1, whiteColor);
+        texData->texts[i].text[0] = '\0';
+    }
 
     for(int i=0; i<AMMOUNT_TEXTS; i++) {
         if (! (texData->texts + i)->tex ) {
             printf("\nError loading the textures. Texture %d.", i);
-            return TEX_ERR; // TODO could be file
+            return TEX_ERR;
         }
     }
     return OK;
@@ -133,9 +142,10 @@ void adjustDim(SDL_Renderer* renderer, GameState* game, GHP_TexturesData* TexDat
 }
 
 // Buttons Reactions
-void setModePlay(void* gameData, int* mode) {SDL_StartTextInput(); *mode = MODE_PLAY;}
+void setModePlay(void* gameData, int* mode) {*mode = MODE_PLAY;}
 void setModeMenu(void* gameData, int* mode) {*mode = MODE_MENU;}
 void setModeLost(void* gameData, int* mode) {*mode = MODE_LOST;}
 void setModeNameplayer(void* gameData, int* mode) { *mode = MODE_NAMEPLAYER; }
 void setModeSearchDir(void* gameData, int*mode) {*mode = MODE_SEARCHDIR; }
 void setModeStats(void* gameData, int*mode) {*mode = MODE_STATS; }
+void setModeSettings(void* gameData, int* mode) {*mode = MODE_SETTINGS;}

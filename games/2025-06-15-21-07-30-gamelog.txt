@@ -1,0 +1,8 @@
+DATE:2025-6-15-21-7-30
+DIMENSION:10x10
+MINES:10
+SEED:1750032451
+Event:Click/Type:L/PosMesh:(03,04)/Date:(2025-06-15-21-07-31)
+Event:Click/Type:R/PosMesh:(05,06)/Date:(2025-06-15-21-07-32)
+Event:Click/Type:R/PosMesh:(05,05)/Date:(2025-06-15-21-07-33)
+Event:PrematureGameEnd

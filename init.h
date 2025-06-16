@@ -25,6 +25,7 @@ void setModeLost(void* gameData, int* mode);
 void setModeNameplayer(void* gameData, int* mode);
 void setModeSearchDir(void* gameData, int*mode);
 void setModeStats(void* gameData, int*mode);
+void setModeSettings(void* gameData, int* mode);
 
 
 

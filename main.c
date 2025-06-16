@@ -1,10 +1,5 @@
 #include "main.h"
 
-// also a REQUIRED functionality is that if the user clicks a revealed num, it must free adjacencies due to
-// having the enough flags for its own adjacency, and if the flags were wrong, lose the game
-
-
-
 int main (int argc, char *argv[]) {
 
     ConfigData configs;
@@ -14,13 +9,12 @@ int main (int argc, char *argv[]) {
     char* nameWindow = "Buscaminas";
     struct GHP_WindowData myWindow;
     if (GHP_SetWindow(&myWindow, nameWindow, react, WIDTH, HEIGHT, &configs, &tex_data)) { // it returns true at the end of the game
-        GHP_DestroyWindow(&myWindow);
         GHP_DestroyTexturesData(&tex_data);
+        GHP_freeBG(&tex_data);
+        GHP_DestroyWindow(&myWindow);
     }
 
-    //srand(time(NULL));
-
-    getchar(); // avoid closing the cmd
+    //getchar(); // avoid closing the cmd
 
     return 0;
 }
@@ -30,8 +24,6 @@ void react(SDL_Renderer* renderer, void* gameData, GHP_TexturesData* TexData) {
     ConfigData* configs = (ConfigData*) gameData;
 
     int mode = MODE_MENU, modePrev; // init mode
-
-    GHP_setBGColor(renderer, 0, 255, 0, 255); // for debugging
 
     GameState game;
     nullGame(&game);
@@ -49,7 +41,8 @@ void react(SDL_Renderer* renderer, void* gameData, GHP_TexturesData* TexData) {
         {initWin, handlerWin, NULL},
         {initSearchFile, handlerSearchFile, renderSearchFile},
         {initReplay, handlerReplay, renderReplay},
-        {initStats, handlerStats, NULL}
+        {initStats, handlerStats, NULL},
+        {initSettings, handlerSettings, renderSettings}
     };
 
 
@@ -87,14 +80,14 @@ void react(SDL_Renderer* renderer, void* gameData, GHP_TexturesData* TexData) {
                     SectionPool[mode].init(renderer, &game, TexData, configs, &mode);
                 }
 
-                if (SectionPool[mode].render) { // because some modes have no render
+                if (SectionPool[mode].render) { // because some modes could have no render
                     SectionPool[mode].render(renderer, &game, TexData, &mode);
                 }
 
+                updateGameTime(renderer, &game, TexData, mode);
+
                 SDL_RenderPresent(renderer);
             }
-
-            updateGameTime(renderer, &game, TexData, mode);
 
         }
 
@@ -102,10 +95,6 @@ void react(SDL_Renderer* renderer, void* gameData, GHP_TexturesData* TexData) {
 
     }
 
-    /*
-    fclose(game.logFile); // ASK For save any unexpected error
-    fclose(game.binFile); // TODO: This shit should be here? remember that saveGame() already close the bin file
-    */
-    destroyDinMtx(game.rows, game.columns, sizeof(mineCeld), (void**)game.field); // TODO WHEN RESIZABLE THIS WILL PUT IN OTHER PLACE
+    destroyDinMtx(game.rows, game.columns, sizeof(mineCeld), (void**)game.field);
 }
 

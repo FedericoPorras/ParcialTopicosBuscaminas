@@ -1,0 +1,4 @@
+DATE:2025-6-15-21-2-9
+DIMENSION:10x10
+MINES:10
+Event:PrematureGameEnd

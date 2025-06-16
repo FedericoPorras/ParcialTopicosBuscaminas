@@ -26,19 +26,17 @@ So, the menu will be in the coords
 (0;768) - (768;1366)  [space of 768x598]
 
 TOFIX:
-* WHEN YOU RUN IT IN (???)
 * ERROR WITH OPENING LOG: ALL REVEALED. DANGER: SECOND EXECUTION AND 
   BEFORE WORKS, ONLY THE FIRST DOES NOT
-* WHEN LOAD STATS, JUST THE AMMOUNT YOU HAVE
+* SOMETIMES MINES PENDING SHOWS WRONG NEGATIVES
 
 MAIN TODOS:
 * CHEAT (REQ)
-* AUTOREVEAL BOMB END GAME
-* CHANGE DIM IN SDL (how?) (just mesh dim)
-* SOME OPTIONS FROM SDL SELECTIONS
-* WIN SIGN
+
 * DEATH AND PETARDO SOUND
 * WHEN LOADS A BIN FILE TRY LOG FILE TOO
+* SHOW GAMES AVAILABLE TO LOAD
+* AUTOREVEAL BOMB END GAME
 
 * HOVER LIGHT (BUTTONS)
 * BETTER TEXTURES / VIEW -> PERSONALIZE
@@ -59,4 +57,3 @@ TO ASK
 - files .h .a -> .a necessary, include them
 - files with no only-type-register. TODO: Save the whole strucure
 - time vars are too long, it's normal? -> YES, time() works with that, avoid compiling risks
-

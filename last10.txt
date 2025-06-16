@@ -1,10 +1,10 @@
-Name:                             1/Dimension:20x20/Mines_pending:0057/Mines_discovered:0003/Flags:0003/Time:00:00:05/End:    
-Name:                             1/Dimension:20x20/Mines_pending:0060/Mines_discovered:0000/Flags:0000/Time:00:00:02/End:    
-Name:                             1/Dimension:30x30/Mines_pending:0132/Mines_discovered:0003/Flags:0003/Time:00:00:09/End:    
-Name:                             1/Dimension:30x30/Mines_pending:0135/Mines_discovered:0000/Flags:0000/Time:00:00:02/End:Lost
-Name:                         jajas/Dimension:08x08/Mines_pending:0000/Mines_discovered:0003/Flags:0003/Time:00:00:09/End: Won
-Name:                             1/Dimension:08x08/Mines_pending:0000/Mines_discovered:0000/Flags:0000/Time:00:00:02/End:    
-Name:                             1/Dimension:08x08/Mines_pending:0000/Mines_discovered:0000/Flags:0000/Time:00:00:01/End:    
-Name:              <Anonymous user>/Dimension:08x08/Mines_pending:0003/Mines_discovered:0000/Flags:0000/Time:00:00:02/End:    
-Name:              <Anonymous user>/Dimension:08x08/Mines_pending:0001/Mines_discovered:0002/Flags:0002/Time:00:00:04/End:    
-Name:              <Anonymous user>/Dimension:08x08/Mines_pending:0001/Mines_discovered:0002/Flags:0002/Time:00:00:06/End:    
+Name:              <Anonymous User>/Dimension:08x08/Mines_pending:0014/Mines_discovered:0002/Flags:0003/Time:00:00:08/End:Lost
+Name:              <Anonymous User>/Dimension:08x08/Mines_pending:0016/Mines_discovered:0000/Flags:0000/Time:00:00:03/End:Lost
+Name:              <Anonymous User>/Dimension:08x08/Mines_pending:0016/Mines_discovered:0000/Flags:0000/Time:00:00:06/End:Lost
+Name:                        elfede/Dimension:10x10/Mines_pending:0000/Mines_discovered:0010/Flags:0010/Time:00:00:44/End: Won
+Name:              <Anonymous User>/Dimension:10x10/Mines_pending:0000/Mines_discovered:0000/Flags:0000/Time:00:02:10/End:    
+Name:                           DAS/Dimension:10x10/Mines_pending:0000/Mines_discovered:0010/Flags:0010/Time:00:00:57/End: Won
+Name:              <Anonymous User>/Dimension:10x10/Mines_pending:0007/Mines_discovered:0003/Flags:0003/Time:00:00:04/End:    
+Name:              <Anonymous User>/Dimension:10x10/Mines_pending:0007/Mines_discovered:0003/Flags:0003/Time:00:00:05/End:    
+Name:              <Anonymous User>/Dimension:10x10/Mines_pending:0008/Mines_discovered:0002/Flags:0002/Time:00:00:02/End:    
+Name:              <Anonymous User>/Dimension:10x10/Mines_pending:0008/Mines_discovered:0002/Flags:0002/Time:00:00:04/End:    

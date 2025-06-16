@@ -53,6 +53,7 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="configs.h" />
+		<Unit filename="constants.h" />
 		<Unit filename="dinMtx.c">
 			<Option compilerVar="CC" />
 		</Unit>

@@ -20,7 +20,7 @@ void printGame(GameState* game) {
 
 }
 
-void saveGameBin(GameState* game, FILE* file) { // TODO: Save the struct game instead of each field
+void saveGameBin(GameState* game, FILE* file) { // It saves some fields because if the struct game is saved instead the pointers take up much memory
     int headers[8] = {game->seed, game->columns, game->rows, game->bombsNum, game->lost[0], game->lost[1], game->last_selected[0], game->last_selected[1]};
 
     fseek(file, 0, SEEK_SET);
@@ -77,16 +77,14 @@ void saveGameStatsLast10(GameState* game, char* namePlayer, int gameEnd) { // TO
 
 
     struct tm timePlayed;
-    if (game->timeFinish == 0) timePlayed = timeGame(game->timeStart); // TODO here diff days/years
+    if (game->timeFinish == 0) timePlayed = timeGame(game->timeStart);
     else timePlayed = timeEndGame(game);
 
 
     char toWrite[LEN_SAVE10LOG+1];
     sprintf(toWrite, "Name:%30s/Dimension:%02dx%02d/Mines_pending:%04d/Mines_discovered:%04d/Flags:%04d/Time:%02d:%02d:%02d/End:%4s\n",
         namePlayer, game->rows, game->columns, stats[0], stats[1], stats[2], timePlayed.tm_hour, timePlayed.tm_min, timePlayed.tm_sec, gameEndWrite
-    ); // TODO: It raises warning
-
-    //int a = strlen(toWrite);
+    );
 
     fwrite(toWrite, sizeof(char), strlen(toWrite), last10file);
 
@@ -120,9 +118,9 @@ void saveGameStatsLast10(GameState* game, char* namePlayer, int gameEnd) { // TO
         }
 
         fwrite(s, LEN_SAVE10LOG*sizeof(char), 10, last10file);
-
-        fclose(last10file);
     }
+
+    fclose(last10file);
 }
 
 void gameStats(GameState* game, int stats[3]) {
@@ -143,15 +141,22 @@ void gameStats(GameState* game, int stats[3]) {
     stats[2] = flags;
 }
 
-void loadGameStatsLast10(GameState* game, char dest[10][LEN_SAVE10LOG]) {
+int loadGameStatsLast10(GameState* game, char dest[10][LEN_SAVE10LOG]) {
 
     FILE* file = fopen("last10.txt", "rb");
-    if (!file) {printf("\nError opening file."); return;}
+    if (!file) {printf("\nError opening file."); return -1;}
+    int i=0;
 
-    for (int i=0; i<10; i++) {
-        fread(dest+i, LEN_SAVE10LOG*sizeof(char), 1, file);
+    fread(dest+i, LEN_SAVE10LOG*sizeof(char), 1, file);
+    while (i<10 && !feof(file)) {
         *((*(dest+i))+LEN_SAVE10LOG-1) = '\0';
+        i++;
+        fread(dest+i, LEN_SAVE10LOG*sizeof(char), 1, file);
     }
+
+    fclose(file);
+
+    return i;
 }
 
 

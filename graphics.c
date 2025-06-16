@@ -2,7 +2,6 @@
 
 #include "graphics.h"
 
-
 bool GHP_SetWindow(struct GHP_WindowData* windowData, char* name, Reaction react, int width, int height, void* gameData, GHP_TexturesData* textures) {
     // Initialize SDL and calls the react function. It will has as arguments the renderer, void* gameData for any info of the game, GHP_TexturesData*, and a draw function
 
@@ -27,16 +26,19 @@ bool GHP_SetWindow(struct GHP_WindowData* windowData, char* name, Reaction react
         return false;
     }
 
+    // texts
     if (TTF_Init() == -1) {
         printf("\nError initializing SDL_ttf: %s\n", TTF_GetError());
         return false;
     }
+    SDL_StartTextInput();
 
     SDL_SetRenderDrawBlendMode(windowData->renderer, SDL_BLENDMODE_BLEND); // transparence
 
     react(windowData->renderer, gameData, textures); // all functionality given from the user
     SDL_Delay(100); // to wait a little bit before closing and avoid consuming too resources
 
+    SDL_StopTextInput();
     TTF_Quit();
     SDL_DestroyRenderer(windowData->renderer);
     SDL_DestroyWindow(windowData->window);
@@ -67,7 +69,7 @@ void GHP_DestroyTexturesData(GHP_TexturesData* data) {
 GHP_Texture GHP_newTexture(SDL_Renderer* renderer, const char* path, int offsetX, int offsetY, int width, int height) {
     // Initialize a texture. offsets of the asset.
 
-    SDL_Texture* sdl_tex = IMG_LoadTexture(renderer, path); // TODO: Free
+    SDL_Texture* sdl_tex = IMG_LoadTexture(renderer, path);
     if (!sdl_tex) {
         printf("\nError loading texture: %s\n", IMG_GetError());
         return (GHP_Texture){NULL, -1, -1, -1, -1};
@@ -86,7 +88,7 @@ void GHP_renderTexture(SDL_Renderer* renderer, GHP_Texture* ghp_tex, int offsetX
     SDL_Rect ghp_tex_rect = {ghp_tex->offsetX, ghp_tex->offsetY, ghp_tex->width, ghp_tex->height};
     SDL_Rect window_rect = {offsetX, offsetY, ghp_tex->width, ghp_tex->height};
 
-    SDL_RenderCopy(renderer, ghp_tex->tex, &ghp_tex_rect, &window_rect); // TODO ACA CRASHEA
+    SDL_RenderCopy(renderer, ghp_tex->tex, &ghp_tex_rect, &window_rect);
 }
 
 void GHP_destroyTexture(GHP_Texture* ghp_tex) {
@@ -94,8 +96,6 @@ void GHP_destroyTexture(GHP_Texture* ghp_tex) {
 }
 
 void GHP_renderMesh(SDL_Renderer* renderer, GHP_Mesh* mesh, int dynamicPresent) {
-
-    // TODO: CHECK DYNAMIC PRESENTS
 
     if (dynamicPresent == 0) {
         for (int i=0; i<mesh->rows; i++) {
@@ -117,25 +117,22 @@ void GHP_renderMesh(SDL_Renderer* renderer, GHP_Mesh* mesh, int dynamicPresent) 
     }
 
 
-    if (dynamicPresent == 2) { // TODO: CHECK HOW IT WORKS
+    if (dynamicPresent == 2) {
         int rows = mesh->rows;
         int cols = mesh->cols;
         int totalCells = rows * cols;
         int cellsRendered = 0;
 
-        // Start at the center of the mesh
         int centerX = cols / 2;
         int centerY = rows / 2;
         int x = centerX, y = centerY;
 
-        // Direction vectors: right, down, left, up
         int directions[4][2] = {{1, 0}, {0, 1}, {-1, 0}, {0, -1}};
-        int currentDir = 0;  // Start moving right
-        int stepSize = 1;    // Initial step length
-        int stepsTaken = 0;  // Steps in current direction
-        int stepCount = 0;   // Total steps before direction change
+        int currentDir = 0;
+        int stepSize = 1;
+        int stepsTaken = 0;
+        int stepCount = 0;
 
-        // Render the center cell first
         GHP_renderTexture(renderer, mesh->txtr,
                          mesh->offsetX + x * mesh->txtr->width,
                          mesh->offsetY + y * mesh->txtr->height);
@@ -145,12 +142,10 @@ void GHP_renderMesh(SDL_Renderer* renderer, GHP_Mesh* mesh, int dynamicPresent) 
 
             SDL_Delay((cellsRendered/totalCells)*30);
 
-            // Move in the current direction
             x += directions[currentDir][0];
             y += directions[currentDir][1];
             stepsTaken++;
 
-            // Only render if within bounds
             if (x >= 0 && x < cols && y >= 0 && y < rows) {
                 GHP_renderTexture(renderer, mesh->txtr,
                                 mesh->offsetX + x * mesh->txtr->width,
@@ -159,13 +154,11 @@ void GHP_renderMesh(SDL_Renderer* renderer, GHP_Mesh* mesh, int dynamicPresent) 
                 if (dynamicPresent) SDL_RenderPresent(renderer);
             }
 
-            // Change direction when step size is completed
             if (stepsTaken == stepSize) {
-                currentDir = (currentDir + 1) % 4;  // Cycle through directions
+                currentDir = (currentDir + 1) % 4;
                 stepsTaken = 0;
                 stepCount++;
 
-                // Increase step size every 2 direction changes (spiral expansion)
                 if (stepCount % 2 == 0) {
                     stepSize++;
                 }
@@ -179,37 +172,30 @@ void GHP_renderMesh(SDL_Renderer* renderer, GHP_Mesh* mesh, int dynamicPresent) 
         int totalCells = rows * cols;
         int cellsRendered = 0;
 
-        // Start from center
         int centerX = cols / 2;
         int centerY = rows / 2;
 
-        // Render center cell first
         GHP_renderTexture(renderer, mesh->txtr,
                          mesh->offsetX + centerX * mesh->txtr->width,
                          mesh->offsetY + centerY * mesh->txtr->height);
         cellsRendered++;
         SDL_RenderPresent(renderer);
 
-        // Expand outward in rings
         for (int radius = 1; cellsRendered < totalCells; radius++) {
-            // Diamond pattern coordinates
             for (int i = 0; i <= radius; i++) {
                 int j = radius - i;
 
-                // 4 symmetric quadrants
                 int coords[4][2] = {
-                    {centerX + i, centerY + j},  // NE
-                    {centerX - i, centerY + j},  // NW
-                    {centerX + i, centerY - j},  // SE
-                    {centerX - i, centerY - j}   // SW
+                    {centerX + i, centerY + j},
+                    {centerX - i, centerY + j},
+                    {centerX + i, centerY - j},
+                    {centerX - i, centerY - j}
                 };
 
-                // Render all valid positions in current ring
                 for (int k = 0; k < 4; k++) {
                     int x = coords[k][0];
                     int y = coords[k][1];
 
-                    // Skip center point after first iteration
                     if (radius == 1 && k > 0 && x == centerX && y == centerY) continue;
 
                     if (x >= 0 && x < cols && y >= 0 && y < rows) {
@@ -225,7 +211,7 @@ void GHP_renderMesh(SDL_Renderer* renderer, GHP_Mesh* mesh, int dynamicPresent) 
 
             int n = 40;
             float more = (float)cellsRendered/totalCells - 0.7;
-            if (more > 0)  n+=(int)(more*more*1000); // slow it in the last cells
+            if (more > 0)  n+=(int)(more*more*1000);
             SDL_Delay(n);
 
 
@@ -266,8 +252,11 @@ void GHP_calcEndPosMesh(GHP_Mesh* mesh, int* pos) { // pos[2]
 bool GHP_clickInMesh(int x, int y, GHP_Mesh* mesh) {
     int ini_pos[2] = {mesh->offsetX, mesh->offsetY};
     int end_pos[2]; GHP_calcEndPosMesh(mesh, end_pos);
-    int dim_pos[2][2] = {{*ini_pos, *(ini_pos+1)}, {*end_pos, *(end_pos+1)}}; // TODO: UGLY!
-    return GHP_clickIn(x, y, dim_pos);
+    int dim_pos[2][2] = {{*ini_pos, *(ini_pos+1)}, {*end_pos, *(end_pos+1)}};
+    bool clicked = GHP_clickIn(x, y, dim_pos);
+    if (x<mesh->rows*mesh->txtr->width+mesh->offsetX && y<mesh->cols*mesh->txtr->height+mesh->offsetY)
+        return clicked;
+    else return false;
 }
 
 void GHP_coordsToPos(GHP_Mesh* mesh, int x, int y, int* pos) { // maybe switch the name to posToCoords
@@ -307,7 +296,7 @@ int GHP_loadRectAsset(SDL_Renderer* renderer, const char* path, GHP_Texture** te
     return OK;
 }
 
-void GHP_newButtonAbs(SDL_Renderer* renderer, char* path, GHP_TexturesData* texData, GHP_Button* button, int initX, int initY, int endX, int endY, ButtonReaction func) { // TODO: Consider taking it to graphics
+void GHP_newButtonAbs(SDL_Renderer* renderer, char* path, GHP_TexturesData* texData, GHP_Button* button, int initX, int initY, int endX, int endY, ButtonReaction func) {
     texData->buttonsTexs[texData->buttons_loaded] = GHP_newTextureAbs(renderer, path, initX, initY, endX, endY);
     button->tex = &(texData->buttonsTexs[texData->buttons_loaded]);
 
@@ -381,8 +370,6 @@ void GHP_updateTextTexture(SDL_Renderer* renderer, GHP_TexturesData* texData, in
     texData->textsTexs[numberText] = GHP_textTexture(renderer, texData->texts[numberText].path, sizeFont, color, texData->texts[numberText].text);
 }
 
-
-
 void GHP_renderText(SDL_Renderer* renderer, GHP_TexturesData* texData, int numberText, int sizeFont, SDL_Color color, int windowX, int windowY) {
     GHP_updateTextTexture(renderer, texData, numberText, sizeFont, color);
     GHP_renderTexture(renderer, texData->texts[numberText].tex, windowX, windowY);
@@ -392,6 +379,31 @@ bool GHP_enterPressed(SDL_Event* event) {
     return (event->type == SDL_KEYDOWN && event->key.keysym.sym == SDLK_RETURN);
 }
 
+bool GHP_setBG(SDL_Renderer* renderer, GHP_TexturesData* texData, char* path) {
 
+    SDL_Texture* sdl_tex = IMG_LoadTexture(renderer, path);
+    if (!sdl_tex) {
+        printf("\nError loading background: %s\n", IMG_GetError());
+        return false;
+    }
 
+    texData->background_tex = sdl_tex;
+    return true;
+}
+
+void GHP_renderBG(SDL_Renderer* renderer, GHP_TexturesData* texData, int width, int height) {
+    SDL_Rect ghp_tex_rect = {0, 0, width, height};
+    SDL_Rect window_rect = {0, 0, width, height};
+    SDL_RenderCopy(renderer, texData->background_tex, &ghp_tex_rect, &window_rect);
+}
+
+void GHP_freeBG(GHP_TexturesData* texData) {
+    SDL_DestroyTexture(texData->background_tex);
+}
+
+void GHP_renderTextureExpress(SDL_Renderer* renderer, char* path, int imgInitX, int imgInitY, int imgEndX, int imgEndY, int winOffsetX, int winOffsetY) {
+    GHP_Texture tex = GHP_newTextureAbs(renderer, path, imgInitX, imgInitY, imgEndX, imgEndY);
+    GHP_renderTexture(renderer, &tex, winOffsetX, winOffsetY);
+    GHP_destroyTexture(&tex);
+}
 

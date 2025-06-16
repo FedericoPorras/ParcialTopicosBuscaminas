@@ -69,6 +69,7 @@ typedef struct {
     GHP_Texture* textsTexs;
     int texts_loaded;
     GHP_Mesh active_mesh;
+    SDL_Texture* background_tex;
 } GHP_TexturesData;
 
 
@@ -100,6 +101,11 @@ void GHP_updateTextTexture(SDL_Renderer* renderer, GHP_TexturesData* texData, in
 bool GHP_clickInButton (int x, int y, GHP_Button* button);
 bool GHP_enterPressed(SDL_Event* event);
 void GHP_renderText(SDL_Renderer* renderer, GHP_TexturesData* texData, int numberText, int sizeFont, SDL_Color color, int windowX, int windowY);
+bool GHP_setBG(SDL_Renderer* renderer, GHP_TexturesData* texData, char* path);
+void GHP_renderBG(SDL_Renderer* renderer, GHP_TexturesData* texData, int width, int height);
+void GHP_freeBG(GHP_TexturesData* texData);
+void GHP_renderTextureExpress(SDL_Renderer* renderer, char* path, int imgInitX, int imgInitY, int imgEndX, int imgEndY, int winOffsetX, int winOffsetY);
+
 
 #endif // GRAPHICS_H_INCLUDED
 

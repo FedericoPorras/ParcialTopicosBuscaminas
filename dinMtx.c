@@ -1,7 +1,7 @@
 #include "dinMtx.h"
 
 void** newDinMtx(int rows, int cols, int len) {
-    void** rv = malloc(8 * rows); // 8 because pointers always have 8 bytes length (game for 64 bit)
+    void** rv = malloc(sizeof(void*) * rows);
     if (!rv) {
         printf("\nMalloc Error. There is no memory for the field.");
         return NULL;

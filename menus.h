@@ -9,6 +9,11 @@
 #include "minesweeper.h"
 #include "init.h"
 
+#define MAX_LEN_SETTINGS_TEXT 10
+
+#define INPUTCHARSETVAL(x) ((x>47 && x<58) || x==120 || x=='%' || x=='/')
+
+
 #ifndef _WIN32
 #include <windows.h>
 #endif // _WIN32
@@ -28,6 +33,7 @@ void updateGameTime(SDL_Renderer* renderer, GameState* game, GHP_TexturesData* T
 void endGameHandleFiles(GameState* game, int mode);
 void last10Log(GameState* game, int mod);
 void loadGame(SDL_Renderer* renderer, GameState* game, GHP_TexturesData* TexData, FILE* file, int* mode);
+void changeConfig(int rows, int cols, int bombsNum, char perc, int seed);
 
 // for menus
 void initPlay(SDL_Renderer* renderer, GameState* game, GHP_TexturesData* tex, ConfigData* configData, int* mode);
@@ -51,5 +57,9 @@ void renderReplay(SDL_Renderer* renderer, GameState* game, GHP_TexturesData* tex
 void handleButtonsClick(GHP_Button* buttons, int ammount, int x, int y, GameState* game, int* mode, SDL_Event* event);
 void initStats(SDL_Renderer* renderer, GameState* game, GHP_TexturesData* tex, ConfigData* configData, int* mode);
 void handlerStats(SDL_Renderer* renderer, GameState* game, GHP_TexturesData* tex, SDL_Event* event, int* mode);
+void initSettings(SDL_Renderer* renderer, GameState* game, GHP_TexturesData* tex, ConfigData* configData, int* mode);
+void handlerSettings(SDL_Renderer* renderer, GameState* game, GHP_TexturesData* tex, SDL_Event* event, int* mode);
+void renderSettings(SDL_Renderer* renderer, GameState* game, GHP_TexturesData* tex, int* mode);
+
 
 #endif // MENUS_H_INCLUDED

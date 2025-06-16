@@ -1,5 +1,5 @@
 # depslib dependency file v1.0
-1749973792 source:d:\facu\topicos\tpparcial\main.c
+1750032378 source:d:\facu\topicos\tpparcial\main.c
 	"main.h"
 
 1748607470 d:\facu\topicos\tpparcial\graphics\graphics.c
@@ -418,13 +418,13 @@
 	<time.h>
 	"gamestate.h"
 
-1749855053 source:d:\facu\topicos\tpparcial\minesweeper.c
+1750020799 source:d:\facu\topicos\tpparcial\minesweeper.c
 	"minesweeper.h"
 
-1749906498 source:d:\facu\topicos\tpparcial\graphics.c
+1750028156 source:d:\facu\topicos\tpparcial\graphics.c
 	"graphics.h"
 
-1749948008 d:\facu\topicos\tpparcial\graphics.h
+1750028150 d:\facu\topicos\tpparcial\graphics.h
 	<stdio.h>
 	<stdbool.h>
 	<string.h>
@@ -817,7 +817,7 @@
 	"begin_code.h"
 	"close_code.h"
 
-1749856277 source:d:\facu\topicos\tpparcial\configs.c
+1750018472 source:d:\facu\topicos\tpparcial\configs.c
 	"configs.h"
 
 1749409263 d:\facu\topicos\tpparcial\configs.h
@@ -825,14 +825,14 @@
 	<string.h>
 	"gamestate.h"
 
-1749971713 d:\facu\topicos\tpparcial\gamestate.h
+1749997428 d:\facu\topicos\tpparcial\gamestate.h
 	<stdbool.h>
 	<stdio.h>
 	<time.h>
 	<string.h>
 	"dinMtx.h"
 
-1749973195 source:d:\facu\topicos\tpparcial\gamestate.c
+1750018775 source:d:\facu\topicos\tpparcial\gamestate.c
 	"gamestate.h"
 
 1650910406 d:\facu\topicos\tpparcial\lib\sdl2-2.0.22\x86_64-w64-mingw32\include\sdl2\sdl.h
@@ -1230,7 +1230,7 @@
 	"begin_code.h"
 	"close_code.h"
 
-1749969100 d:\facu\topicos\tpparcial\menus.h
+1750017469 d:\facu\topicos\tpparcial\menus.h
 	"constants.h"
 	"dirHandle.h"
 	"graphics.h"
@@ -1240,7 +1240,7 @@
 	"init.h"
 	<windows.h>
 
-1749973388 source:d:\facu\topicos\tpparcial\menus.c
+1750032010 source:d:\facu\topicos\tpparcial\menus.c
 	"menus.h"
 
 1749762482 d:\facu\topicos\tpparcial\dinmtx.h
@@ -1639,10 +1639,10 @@
 	"begin_code.h"
 	"close_code.h"
 
-1749968762 source:d:\facu\topicos\tpparcial\init.c
+1750023999 source:d:\facu\topicos\tpparcial\init.c
 	"init.h"
 
-1749968779 d:\facu\topicos\tpparcial\init.h
+1750023682 d:\facu\topicos\tpparcial\init.h
 	<SDL.h>
 	<stdbool.h>
 	<stdlib.h>
@@ -1652,5 +1652,5 @@
 	"graphics.h"
 	"minesweeper.h"
 
-1749963742 d:\facu\topicos\tpparcial\constants.h
+1750024322 d:\facu\topicos\tpparcial\constants.h
 

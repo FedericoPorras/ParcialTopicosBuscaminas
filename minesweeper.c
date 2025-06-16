@@ -14,7 +14,7 @@ const char masks[] = {0x01, 0x02, 0x04, 0x08, 0x10, 0x20, 0x40, 0x80};
 void emptyField(int rows, int cols, mineCeld** field) {
     for (int i=0; i<rows; i++) {
         for (int j=0; j<cols; j++) {
-            field[i][j] = (mineCeld){false, false, false, 0}; // TODO maybe nullCeld?
+            field[i][j] = (mineCeld){false, false, false, 0};
         }
     }
 }
@@ -29,13 +29,11 @@ int randomBombs(int rows, int cols, mineCeld** field, int ammount, int seed, int
     }
     else srand(seed); // or random it
 
-    // Put the bombs -> TODO: Put in a func to avoid warnings
     int i=0;
     int randomNum1, randomNum2;
     while(i<ammount) {
         randomNum1 = rand();
         randomNum2 = rand();
-        //Sleep(100);
         mineCeld* random = &(field[randomNum1%rows][randomNum2%cols]);
         if (!random->bomb && random != &field[*pos][*(pos+1)]) {
             random->bomb = true;
@@ -65,7 +63,7 @@ char check_position(int i, int j, int rows, int cols) {
     return rv;
 }
 
-void calcAdjacency(int rows, int cols, mineCeld** field) {// TODO: THINK IF ALL THE FUNCS WITH HEXA HANDLING COULD BE JOINED
+void calcAdjacency(int rows, int cols, mineCeld** field) {
     for (int i=0; i<rows; i++) {
         for (int j=0; j<cols; j++) {
             if (field[i][j].bomb) field[i][j].adjacency = -1;
@@ -132,7 +130,7 @@ bool checkWin(int rows, int cols, mineCeld** field) {
                 !field[i][j].revealed &&
                 (!field[i][j].bomb || (field[i][j].bomb && !field[i][j].flag))
             )
-                return false; // TODO: CHANGE, loose will be analized in other function
+                return false;
         }
     }
     return true;
@@ -146,7 +144,6 @@ void printFieldConsole(int rows, int cols, mineCeld** field) {
                 printf("X");
             else
                 printf("%d", field[i][j].adjacency);
-            //printf(field[i][j].bomb ? "X" : " ");
             printf("|");
         }
         printf("\n");
@@ -181,7 +178,7 @@ void logFileWriteClick(char button, int* posInMesh, FILE* file) {
     char date[20];
     time_t t = time(NULL);
     struct tm* now = localtime(&t);
-    sprintf(date, "%04d-%02d-%02d-%02d-%02d-%02d", now->tm_year+1900, now->tm_mon+1, now->tm_mday, now->tm_hour, now->tm_min, now->tm_sec); // TODO: Release warning
+    sprintf(date, "%04d-%02d-%02d-%02d-%02d-%02d", now->tm_year+1900, now->tm_mon+1, now->tm_mday, now->tm_hour, now->tm_min, now->tm_sec);
 
     fprintf(file, "\nEvent:Click/Type:%c/PosMesh:(%02d,%02d)/Date:(%s)", button, *posInMesh, *(posInMesh+1), date);
 }

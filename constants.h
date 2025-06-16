@@ -1,8 +1,11 @@
 #ifndef CONSTANTS_H_INCLUDED
 #define CONSTANTS_H_INCLUDED
 
+#define PATH_BG "img/background.png"
+
 #define MAX_LEN_LOG 100
 
+#define MODE_SETTINGS 8
 #define MODE_STATS 7
 #define MODE_REPLAY 6
 #define MODE_SEARCHDIR 5
@@ -30,7 +33,8 @@
 #define BUT_REPLAYACTION 6
 #define BUT_SAVEGAME 7
 #define BUT_STATS 8
-#define AMMOUNT_BUTTONS 9
+#define BUT_SETTINGS 9
+#define AMMOUNT_BUTTONS 10
 
 #define TEXT_SEARCHFILESENTRY 0
 #define TEXT_SHOWLOG_L1 1
@@ -49,7 +53,9 @@
 #define TEXT_LAST10GAMES_9 14
 #define TEXT_LAST10GAMES_10 15
 #define TEXT_LAST10GAMES_HEAD 16
-#define AMMOUNT_TEXTS 17
+#define TEXT_NAMEWINNER 17
+#define TEXT_SETTINGS 18
+#define AMMOUNT_TEXTS 19
 
 
 #define WIDTH 1366
@@ -57,7 +63,7 @@
 #define WIDTH_SPACE_MESH_MINES 768
 
 #define WHITE_COLOR (SDL_Color){255, 255, 255, 255}
-
+#define BLACK_COLOR (SDL_Color){0,0,0,255}
 
 
 #define WIDTH 1366
@@ -69,7 +75,7 @@
 #define LAST 3
 
 #define OK 0
-#define MEM_ERR 1 // TODO: Check when it has to be used!
+#define MEM_ERR 1
 #define DIM_ERR 2
 #define FILE_ERR 3
 #define GRAL_ERR 4

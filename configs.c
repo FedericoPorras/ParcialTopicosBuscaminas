@@ -10,7 +10,7 @@ bool initConfig(ConfigData* configs) {
     char option[MAX_LEN_OPTION];
     float value;
     char lastChar;
-    while (fscanf(Fconfig, "\n%[a-zA-Z]=%f%c", option, &value, &lastChar) > 0) { // TODO: Check max string tolerable / remember if fscanf reachs EOF returns -1
+    while (fscanf(Fconfig, "\n%[a-zA-Z]=%f%c", option, &value, &lastChar) > 0) {
         if (strcmp(option, "columnas") == 0)
             configs->cols=(int)value;
         else if (strcmp(option, "filas") == 0)
@@ -56,7 +56,7 @@ bool resetConfig() {
     }
 
     char def[] = "columnas=10\nfilas=10\nminas=15%\nsemilla=-1";
-    fwrite(def, sizeof(def), 1, defaultConfig); // sizeof(def) or strlen ?
+    fwrite(def, sizeof(def), 1, defaultConfig);
     fclose(defaultConfig);
     return true;
 }
